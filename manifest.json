@@ -1,0 +1,9 @@
+{
+  "name": "MiMeddig?",
+  "short_name": "MiMeddig?",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eef5ff",
+  "theme_color": "#7dff9a",
+  "icons": []
+}
