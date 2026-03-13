@@ -94,15 +94,17 @@ video{width:250px;margin-top:10px;display:none;border:1px solid #ccc;}
 
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script>
-// USER
-let storedName=localStorage.getItem("username")
-if(storedName){
-    document.querySelector("h1").textContent="🍎 MiMeddig? – "+storedName
+// KEZDŐOLDAL
+function login(){
+    let name=document.getElementById("username").value
+    if(!name) return alert("Adj meg egy nevet!");
+    localStorage.setItem("username",name)
+    document.querySelector("h1").textContent="🍎 MiMeddig? – "+name
     document.getElementById("login").classList.remove("active")
     show('inventory')
 }
 
-// ITEMS
+// FUNKCIÓK
 let items=JSON.parse(localStorage.getItem("items")||"[]")
 function save(){localStorage.setItem("items",JSON.stringify(items))}
 function show(id){
@@ -110,19 +112,11 @@ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
 document.getElementById(id).classList.add("active")
 render()
 }
-function login(){
-let name=document.getElementById("username").value
-if(!name) return alert("Adj meg egy nevet!");
-localStorage.setItem("username",name)
-document.querySelector("h1").textContent="🍎 MiMeddig? – "+name
-document.getElementById("login").classList.remove("active")
-show('inventory')
-}
 function addItem(){
 let name=document.getElementById("name").value
 let expiry=document.getElementById("expiry").value
 let location=document.getElementById("location").value
-if(!name)return
+if(!name) return
 items.push({name,expiry,location,qty:1,shopping:false})
 save();render()
 }
