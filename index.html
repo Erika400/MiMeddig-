@@ -1,40 +1,369 @@
 <!DOCTYPE html>
-
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MiMeddig?</title>
-<link rel="manifest" href="manifest.json">
+
 <style>
-body{font-family:sans-serif;padding:20px;background:#eef5ff}
-input,select,button{margin:5px;padding:6px}
-table{border-collapse:collapse;width:100%}
-th,td{border:1px solid #ccc;padding:6px;text-align:center}
-.expired{background:#ff5c5c}
-.soon{background:#fff2a8}
-.usable{background:#7dff9a}
-.preserved{background:#b3ffd9}
-.shopping{border:2px dashed #ff9900}
-#map{height:300px;border:1px solid #aaa;margin-top:20px;position:relative}
-.dot{position:absolute;padding:4px 7px;border-radius:6px;font-size:12px;cursor:pointer;color:#000;text-align:center}
-video{width:260px;margin-top:10px;border:1px solid #ccc;display:none}
-#login{margin-bottom:20px}
-#settings{margin-top:10px}
+
+body{
+font-family:Arial;
+background:#eef5ff;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+input,select,button{
+margin:5px;
+padding:6px;
+}
+
+table{
+border-collapse:collapse;
+width:100%;
+margin-top:15px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:6px;
+text-align:center;
+}
+
+.expired{background:#ff7b7b;}
+.soon{background:#fff3a6;}
+.good{background:#b7f5b7;}
+
+nav button{
+margin:5px;
+}
+
+.section{
+display:none;
+}
+
+.active{
+display:block;
+}
+
+#map{
+margin-top:20px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+}
+
+.place{
+border:2px solid #333;
+border-radius:10px;
+padding:10px;
+min-height:120px;
+background:white;
+}
+
+.place h3{
+margin-top:0;
+}
+
+.itemdot{
+background:#7dff9a;
+padding:3px 6px;
+border-radius:6px;
+display:inline-block;
+margin:3px;
+font-size:12px;
+}
+
+video{
+width:250px;
+margin-top:10px;
+display:none;
+border:1px solid #ccc;
+}
+
 </style>
 </head>
+
 <body>
-<h2>MiMeddig? 🍎</h2>
-<div id="login">
-<input id="username" placeholder="Felhasználónév">
-<button onclick="login()">Belépés</button>
-</div>
-<div id="app" style="display:none">
-<div id="settings">
-<label><input type="checkbox" id="autoShopping" checked> Automatikus bevásárló lista 1 napon belüli lejáratnál</label>
-</div>
+
+<h1>🍎 MiMeddig?</h1>
+
+<nav>
+<button onclick="show('inventory')">Készlet</button>
+<button onclick="show('mapview')">Térkép</button>
+<button onclick="show('shopping')">Bevásárlólista</button>
+</nav>
+
+<!-- KÉSZLET -->
+
+<div id="inventory" class="section active">
+
+<h3>Új termék</h3>
+
 <input id="name" placeholder="Termék">
+
 <input type="date" id="expiry">
+
+<select id="location">
+<option value="fridge">🧊 Hűtő</option>
+<option value="freezer">❄️ Fagyasztó</option>
+<option value="pantry">🗄 Kamra</option>
+<option value="bath">🛁 Fürdő</option>
+<option value="meds">💊 Gyógyszerek</option>
+<option value="cosmetics">🧴 Kozmetikumok</option>
+</select>
+
+<button onclick="addItem()">Hozzáadás</button>
+
+<br>
+
+<input id="barcode" placeholder="Barcode">
+
+<button onclick="startScanner()">📷 Barcode</button>
+
+<video id="video" autoplay></video>
+
+<h3>Készlet</h3>
+
+<select onchange="sortItems(this.value)">
+<option value="expiry">Rendezés lejárat szerint</option>
+<option value="name">Rendezés név szerint</option>
+</select>
+
+<table>
+
+<thead>
+<tr>
+<th>Termék</th>
+<th>Lejár</th>
+<th>Nap</th>
+<th>Menny.</th>
+<th>Lista</th>
+<th></th>
+</tr>
+</thead>
+
+<tbody id="list"></tbody>
+
+</table>
+
+</div>
+
+<!-- TÉRKÉP -->
+
+<div id="mapview" class="section">
+
+<h3>Házitérkép</h3>
+
+<div id="map">
+
+<div class="place" id="fridge">
+<h3>🧊 Hűtő</h3>
+</div>
+
+<div class="place" id="freezer">
+<h3>❄️ Fagyasztó</h3>
+</div>
+
+<div class="place" id="pantry">
+<h3>🗄 Kamra</h3>
+</div>
+
+<div class="place" id="bath">
+<h3>🛁 Fürdő</h3>
+</div>
+
+<div class="place" id="meds">
+<h3>💊 Gyógyszerek</h3>
+</div>
+
+<div class="place" id="cosmetics">
+<h3>🧴 Kozmetikumok</h3>
+</div>
+
+</div>
+
+</div>
+
+<!-- BEVÁSÁRLÓLISTA -->
+
+<div id="shopping" class="section">
+
+<h3>Bevásárlólista</h3>
+
+<ul id="shoppinglist"></ul>
+
+</div>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<script>
+
+let items=JSON.parse(localStorage.getItem("items")||"[]")
+
+function save(){
+localStorage.setItem("items",JSON.stringify(items))
+}
+
+function show(id){
+
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+
+document.getElementById(id).classList.add("active")
+
+render()
+
+}
+
+function addItem(){
+
+let name=document.getElementById("name").value
+let expiry=document.getElementById("expiry").value
+let location=document.getElementById("location").value
+
+if(!name)return
+
+items.push({
+name,
+expiry,
+location,
+qty:1,
+shopping:false
+})
+
+save()
+render()
+
+}
+
+function removeItem(i){
+
+items.splice(i,1)
+save()
+render()
+
+}
+
+function sortItems(type){
+
+if(type==="name"){
+items.sort((a,b)=>a.name.localeCompare(b.name))
+}
+
+if(type==="expiry"){
+items.sort((a,b)=>new Date(a.expiry)-new Date(b.expiry))
+}
+
+render()
+
+}
+
+function render(){
+
+let list=document.getElementById("list")
+
+list.innerHTML=""
+
+let shopping=document.getElementById("shoppinglist")
+
+shopping.innerHTML=""
+
+document.querySelectorAll(".place").forEach(p=>{
+
+p.querySelectorAll(".itemdot").forEach(d=>d.remove())
+
+})
+
+let now=new Date()
+
+items.forEach((item,i)=>{
+
+let exp=new Date(item.expiry)
+
+let days=Math.ceil((exp-now)/86400000)
+
+let tr=document.createElement("tr")
+
+tr.className=days<0?"expired":days<3?"soon":"good"
+
+tr.innerHTML=
+
+`<td>${item.name}</td>
+<td>${item.expiry}</td>
+<td>${days}</td>
+<td>
+<input type="number" value="${item.qty}" min="1"
+onchange="items[${i}].qty=this.value;save()">
+</td>
+<td>
+<input type="checkbox"
+${item.shopping?"checked":""}
+onchange="items[${i}].shopping=this.checked;save();render()">
+</td>
+<td>
+<button onclick="removeItem(${i})">x</button>
+</td>`
+
+list.appendChild(tr)
+
+if(item.shopping){
+
+let li=document.createElement("li")
+
+li.textContent=item.name+" ("+item.qty+")"
+
+shopping.appendChild(li)
+
+}
+
+let dot=document.createElement("div")
+
+dot.className="itemdot"
+
+dot.textContent=item.name
+
+document.getElementById(item.location).appendChild(dot)
+
+})
+
+}
+
+render()
+
+/* BARCODE */
+
+let codeReader=new ZXing.BrowserBarcodeReader()
+
+function startScanner(){
+
+let video=document.getElementById("video")
+
+video.style.display="block"
+
+codeReader.decodeFromVideoDevice(null,"video",(result,err)=>{
+
+if(result){
+
+document.getElementById("barcode").value=result.text
+
+codeReader.reset()
+
+video.style.display="none"
+
+}
+
+})
+
+}
+
+</script>
+
+</body>
+</html><input type="date" id="expiry">
 <select id="category">
 <option value="food">Étel</option>
 <option value="cosmetic">Kozmetikum</option>
