@@ -1,472 +1,150 @@
 <!DOCTYPE html>
+
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Save It - Before You Waste It</title>
 
-<style>
+<title>Save It – Before You Waste It</title>
 
-body{
-font-family:system-ui;
-margin:0;
-background:#f2f4f8;
-}
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
 
-header{
-background:white;
-padding:16px;
-text-align:center;
-font-size:22px;
-font-weight:700;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-header small{
-display:block;
-font-size:13px;
-font-weight:400;
-color:#666;
-}
-
-#content{
-padding:15px;
-padding-bottom:100px;
-}
-
-#map{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px;
-}
-
-.place{
-background:white;
-border-radius:16px;
-padding:10px;
-min-height:140px;
-box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-
-.place h3{
-margin:0 0 8px 0;
-font-size:15px;
-}
-
-.item{
-padding:5px 10px;
-border-radius:20px;
-font-size:12px;
-display:inline-block;
-margin:3px;
-cursor:pointer;
-font-weight:600;
-}
-
-.good{background:#b6f5b6}
-.soon{background:#ffeaa7}
-.expired{background:#ff7b7b}
-
-#addBtn{
-position:fixed;
-bottom:70px;
-right:20px;
-width:60px;
-height:60px;
-border-radius:30px;
-border:none;
-background:#4f7cff;
-color:white;
-font-size:28px;
-box-shadow:0 10px 20px rgba(0,0,0,0.25);
-}
-
-nav{
-position:fixed;
-bottom:0;
-width:100%;
-background:white;
-display:flex;
-justify-content:space-around;
-padding:10px;
-box-shadow:0 -3px 10px rgba(0,0,0,0.1);
-}
-
-nav button{
-background:none;
-border:none;
-font-size:14px;
-}
-
-.modal{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-display:none;
-background:rgba(0,0,0,0.5);
-align-items:center;
-justify-content:center;
-}
-
-.modalBox{
-background:white;
-padding:20px;
-border-radius:14px;
-width:280px;
-}
-
-input,select{
-width:100%;
-padding:8px;
-margin:6px 0;
-}
-
-button.save{
-background:#4f7cff;
-color:white;
-border:none;
-padding:10px;
-border-radius:10px;
-width:100%;
-}
-
-#stats{
-background:white;
-margin-top:20px;
-padding:10px;
-border-radius:12px;
-box-shadow:0 3px 10px rgba(0,0,0,0.08);
-}
-
-#shopList div{
-background:white;
-padding:10px;
-border-radius:10px;
-margin-bottom:8px;
-}
-
-</style>
 </head>
 
 <body>
 
+<div id="loginScreen">
+
+<h1>Save It</h1>
+<p class="subtitle">Before You Waste It</p>
+
+<input id="username" placeholder="Felhasználónév">
+<input id="password" type="password" placeholder="Jelszó">
+
+<button onclick="login()">Belépés</button>
+
+</div>
+
+<div id="appScreen" style="display:none">
+
 <header>
 Save It
-<small>Before You Waste It</small>
+<span>Before You Waste It</span>
 </header>
 
-<div id="content">
+<nav>
 
-<div id="map">
+<button onclick="showMap()">Térkép</button> <button onclick="showShopping()">Bevásárlólista</button> <button onclick="logout()">Kilépés</button>
 
-<div class="place" id="fridge"><h3>🧊 Hűtő</h3></div>
-<div class="place" id="freezer"><h3>❄️ Fagyasztó</h3></div>
-<div class="place" id="pantry"><h3>🗄 Kamra</h3></div>
-<div class="place" id="bath"><h3>🛁 Fürdő</h3></div>
-<div class="place" id="meds"><h3>💊 Gyógyszerek</h3></div>
-<div class="place" id="cos"><h3>🧴 Kozmetikumok</h3></div>
+</nav>
+
+<section id="mapView">
+
+<div class="map">
+
+<div class="place" id="fridge">
+<h3>🧊 Hűtő</h3>
+</div>
+
+<div class="place" id="freezer">
+<h3>❄️ Fagyasztó</h3>
+</div>
+
+<div class="place" id="pantry">
+<h3>🗄 Kamra</h3>
+</div>
+
+<div class="place" id="bath">
+<h3>🛁 Fürdő</h3>
+</div>
+
+<div class="place" id="meds">
+<h3>💊 Gyógyszerek</h3>
+</div>
+
+<div class="place" id="cosmetics">
+<h3>🧴 Kozmetikumok</h3>
+</div>
 
 </div>
 
 <div id="stats">
+<h3>Statisztika</h3>
+<p>Heti pazarlás: <span id="weekLoss">0</span> Ft</p>
+<p>Havi pazarlás: <span id="monthLoss">0</span> Ft</p>
+</div>
 
-<h4>Statisztika</h4>
+</section>
 
-<p>Heti veszteség: <span id="weekLoss">0</span> Ft</p>
-<p>Havi veszteség: <span id="monthLoss">0</span> Ft</p>
+<section id="shoppingView" style="display:none">
+
+<h2>Bevásárlólista</h2>
+<div id="shoppingList"></div>
+
+</section>
+
+<button id="addButton" onclick="openAddModal()">+</button>
 
 </div>
 
-<div id="shopList" style="display:none"></div>
-
-</div>
-
-<button id="addBtn" onclick="openModal()">+</button>
-
-<nav>
-
-<button onclick="showMap()">Térkép</button>
-<button onclick="showShop()">Bevásárlólista</button>
-
-</nav>
-
-<div class="modal" id="modal">
+<div id="modal" class="modal">
 
 <div class="modalBox">
 
-<h3>Új termék</h3>
+<h2>Új termék</h2>
 
-<input id="name" placeholder="Termék neve">
+<input id="itemName" placeholder="Termék neve">
 
 <input id="barcode" placeholder="Barcode (opcionális)">
 
-<input type="number" id="qty" placeholder="Mennyiség">
+<input id="quantity" type="number" placeholder="Mennyiség">
 
 <select id="unit">
-
 <option>db</option>
 <option>kg</option>
 <option>l</option>
-
 </select>
 
-<input type="number" id="price" placeholder="Egységár Ft">
+<input id="price" type="number" placeholder="Egységár Ft">
 
-<input type="date" id="expiry">
+<input id="expiry" type="date">
 
-<select id="loc">
-
+<select id="location">
 <option value="fridge">Hűtő</option>
 <option value="freezer">Fagyasztó</option>
 <option value="pantry">Kamra</option>
 <option value="bath">Fürdő</option>
 <option value="meds">Gyógyszerek</option>
-<option value="cos">Kozmetikumok</option>
-
+<option value="cosmetics">Kozmetikumok</option>
 </select>
 
-<button class="save" onclick="addItem()">Mentés</button>
+<label>
+<input type="checkbox" id="toShopping">
+Bevásárlólistára
+</label>
+
+<button onclick="saveItem()">Mentés</button>
 
 </div>
 
 </div>
 
-<script>
+<div id="itemModal" class="modal">
 
-let items=JSON.parse(localStorage.getItem("items")||"[]")
-let shopping=JSON.parse(localStorage.getItem("shopping")||"[]")
+<div class="modalBox" id="itemDetails"></div>
 
-function save(){
+</div>
 
-localStorage.setItem("items",JSON.stringify(items))
-localStorage.setItem("shopping",JSON.stringify(shopping))
+<script src="storage.js"></script>
 
-}
+<script src="login.js"></script>
 
-function openModal(){
+<script src="ui.js"></script>
 
-document.getElementById("modal").style.display="flex"
+<script src="app.js"></script>
 
-}
-
-function addItem(){
-
-let item={
-
-id:Date.now(),
-name:name.value,
-barcode:barcode.value,
-qty:Number(qty.value)||1,
-unit:unit.value,
-price:Number(price.value)||0,
-expiry:expiry.value,
-location:loc.value,
-status:"active"
-
-}
-
-items.push(item)
-
-save()
-
-document.getElementById("modal").style.display="none"
-
-render()
-
-}
-
-function render(){
-
-document.querySelectorAll(".place").forEach(p=>{
-
-p.querySelectorAll(".item").forEach(i=>i.remove())
-
-})
-
-let now=new Date()
-
-let weekLoss=0
-let monthLoss=0
-
-items.forEach(i=>{
-
-if(i.status!=="active") return
-
-let exp=new Date(i.expiry)
-let days=Math.ceil((exp-now)/86400000)
-
-let el=document.createElement("div")
-
-el.className="item"
-
-if(days<0) el.classList.add("expired")
-else if(days<3) el.classList.add("soon")
-else el.classList.add("good")
-
-el.textContent=i.name
-
-el.onclick=()=>openItemMenu(i.id)
-
-el.draggable=true
-
-el.ondragstart=e=>{
-
-e.dataTransfer.setData("id",i.id)
-
-}
-
-document.getElementById(i.location).appendChild(el)
-
-})
-
-calcStats()
-
-}
-
-document.querySelectorAll(".place").forEach(p=>{
-
-p.ondragover=e=>e.preventDefault()
-
-p.ondrop=e=>{
-
-let id=e.dataTransfer.getData("id")
-
-let item=items.find(x=>x.id==id)
-
-item.location=p.id
-
-save()
-
-render()
-
-}
-
-})
-
-function openItemMenu(id){
-
-let item=items.find(i=>i.id==id)
-
-let action=prompt(
-
-item.name+
-"\nlejár: "+item.expiry+
-"\n1 elfogyasztva"+
-"\n2 kidobva"+
-"\n3 bevásárlólista"+
-"\n4 törlés"
-)
-
-if(action=="1"){
-
-item.status="consumed"
-
-}
-
-if(action=="2"){
-
-item.status="wasted"
-
-}
-
-if(action=="3"){
-
-shopping.push(item.name)
-
-}
-
-if(action=="4"){
-
-items=items.filter(i=>i.id!=id)
-
-}
-
-save()
-
-render()
-
-renderShop()
-
-}
-
-function renderShop(){
-
-let box=document.getElementById("shopList")
-
-box.innerHTML=""
-
-shopping.forEach((s,i)=>{
-
-let d=document.createElement("div")
-
-d.innerHTML=s+" <button onclick='delShop("+i+")'>X</button>"
-
-box.appendChild(d)
-
-})
-
-}
-
-function delShop(i){
-
-shopping.splice(i,1)
-
-save()
-
-renderShop()
-
-}
-
-function calcStats(){
-
-let now=new Date()
-
-let weekLoss=0
-let monthLoss=0
-
-items.forEach(i=>{
-
-if(i.status!=="wasted") return
-
-let price=i.price*i.qty
-
-monthLoss+=price
-
-weekLoss+=price
-
-})
-
-weekLossEl=document.getElementById("weekLoss")
-monthLossEl=document.getElementById("monthLoss")
-
-weekLossEl.textContent=weekLoss
-monthLossEl.textContent=monthLoss
-
-}
-
-function showShop(){
-
-document.getElementById("map").style.display="none"
-document.getElementById("stats").style.display="none"
-document.getElementById("shopList").style.display="block"
-
-renderShop()
-
-}
-
-function showMap(){
-
-document.getElementById("map").style.display="grid"
-document.getElementById("stats").style.display="block"
-document.getElementById("shopList").style.display="none"
-
-}
-
-render()
-
-</script>
+<script src="barcode.js"></script>
 
 </body>
 </html>
