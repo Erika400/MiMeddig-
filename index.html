@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Save It – Before You Waste It</title>
 
 <link rel="stylesheet" href="style.css">
@@ -23,20 +21,22 @@
 <input id="password" type="password" placeholder="Jelszó">
 
 <button onclick="login()">Belépés</button>
+<p>Még nincs fiókod? <a href="#" onclick="register()">Regisztráció</a></p>
 
 </div>
 
 <div id="appScreen" style="display:none">
 
-<header>
-Save It
-<span>Before You Waste It</span>
+<header class="app-header">
+<h1>Save It</h1>
+<p>Before You Waste It</p>
+<div class="header-icons">🧊 🗄 💊 🧴</div>
 </header>
 
 <nav>
-
-<button onclick="showMap()">Térkép</button> <button onclick="showShopping()">Bevásárlólista</button> <button onclick="logout()">Kilépés</button>
-
+<button onclick="showMap()">Térkép</button>
+<button onclick="showShopping()">Bevásárlólista</button>
+<button onclick="logout()">Kilépés</button>
 </nav>
 
 <section id="mapView">
@@ -69,10 +69,17 @@ Save It
 
 </div>
 
-<div id="stats">
-<h3>Statisztika</h3>
-<p>Heti pazarlás: <span id="weekLoss">0</span> Ft</p>
-<p>Havi pazarlás: <span id="monthLoss">0</span> Ft</p>
+<div id="statsContainer">
+<div class="stats-card">
+<h3>Heti pazarlás</h3>
+<p><span id="weekLoss">0</span> Ft</p>
+<canvas id="weekChart"></canvas>
+</div>
+<div class="stats-card">
+<h3>Havi pazarlás</h3>
+<p><span id="monthLoss">0</span> Ft</p>
+<canvas id="monthChart"></canvas>
+</div>
 </div>
 
 </section>
@@ -92,24 +99,18 @@ Save It
 
 <div class="modalBox">
 
-<h2>Új termék</h2>
+<h2>Új termék / Szerkesztés</h2>
 
 <input id="itemName" placeholder="Termék neve">
-
 <input id="barcode" placeholder="Barcode (opcionális)">
-
 <input id="quantity" type="number" placeholder="Mennyiség">
-
 <select id="unit">
 <option>db</option>
 <option>kg</option>
 <option>l</option>
 </select>
-
 <input id="price" type="number" placeholder="Egységár Ft">
-
 <input id="expiry" type="date">
-
 <select id="location">
 <option value="fridge">Hűtő</option>
 <option value="freezer">Fagyasztó</option>
@@ -118,13 +119,14 @@ Save It
 <option value="meds">Gyógyszerek</option>
 <option value="cosmetics">Kozmetikumok</option>
 </select>
-
 <label>
-<input type="checkbox" id="toShopping">
-Bevásárlólistára
+<input type="checkbox" id="toShopping"> Bevásárlólistára
 </label>
 
+<div class="modal-buttons">
 <button onclick="saveItem()">Mentés</button>
+<button onclick="closeModal()">Mégse</button>
+</div>
 
 </div>
 
@@ -137,14 +139,11 @@ Bevásárlólistára
 </div>
 
 <script src="storage.js"></script>
-
 <script src="login.js"></script>
-
 <script src="ui.js"></script>
-
 <script src="app.js"></script>
-
 <script src="barcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
