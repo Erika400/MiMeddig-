@@ -3,147 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Save It – Before You Waste It</title>
-
-<link rel="stylesheet" href="style.css">
+<title>Save It</title>
 <link rel="manifest" href="manifest.json">
+<style>
+  body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background:#f5f5f5; }
 
-</head>
+  /* ---------------------------
+     Header / fejléc
+  ---------------------------- */
+  .app-header {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  .app-header h1 { font-size: 2rem; margin:0; text-shadow:1px 1px 2px rgba(0,0,0,0.2);}
+  .app-header .subtitle { font-size:1rem; margin:0; opacity:0.9; }
+  .header-nav { margin-top:0.5rem; }
+  .header-nav button {
+    background-color: rgba(255,255,255,0.2);
+    border: none;
+    color:#fff;
+    padding:0.5rem 1rem;
+    margin:0 0.2rem;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+  }
+  .header-nav button:hover { background-color: rgba(255,255,255,0.4); }
 
-<body>
+  /* ---------------------------
+     Regisztráció / Login
+  ---------------------------- */
+  #loginArea, #registerFields { max-width: 350px; margin: 1rem auto; background:#fff; padding:1rem; border-radius:15px; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+  #loginArea input, #registerFields input { width:100%; margin:0.5rem 0; padding:0.5rem; border-radius:10px; border:1px solid #ccc;}
+  #loginArea button, #registerFields button { width:100%; padding:0.5rem; border:none; border-radius:10px; background:#ff9a9e; color:#fff; font-weight:bold; cursor:pointer; margin-top:0.5rem;}
+  #loginArea button:hover, #registerFields button:hover { background:#fad0c4; }
 
-<div id="loginScreen">
+  /* ---------------------------
+     Modal popup termékhez
+  ---------------------------- */
+  .modal { position: fixed; top:0; left:0; right:0; bottom:0; background-color: rgba(0,0,0,0.4); display:none; justify-content:center; align-items:center; z-index:1000;}
+  .modal-content { background:#fff; padding:1rem; border-radius:15px; max-width:90%; width:350px; box-shadow:0 4px 8px rgba(0,0,0,0.2); display:flex; flex-direction:column; gap:1rem;}
+  #itemDetails h3 { margin:0 0 0.5rem 0; font-size:1.2rem; color:#333;}
+  #itemDetails p { margin:0.2rem 0; color:#555;}
+  .modal-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:0.5rem;}
+  .modal-buttons button { padding:0.5rem; border:none; border-radius:10px; background:#ff9a9e; color:#fff; font-weight:bold; cursor:pointer; transition:0.2s;}
+  .modal-buttons button:hover { background:#fad0c4;}
+  @media(max-width:400px){ .modal-buttons { grid-template-columns:1fr;} }
 
-<h1>Save It</h1>
-<p class="subtitle">Before You Waste It</p>
-
-<input id="username" placeholder="Felhasználónév">
-<input id="password" type="password" placeholder="Jelszó">
-
-<button onclick="login()">Belépés</button>
-<p>Még nincs fiókod? <a href="#" onclick="register()">Regisztráció</a></p>
-
-</div>
-
-<div id="appScreen" style="display:none">
-
-<header class="app-header">
-<h1>Save It</h1>
-<p>Before You Waste It</p>
-<div class="header-icons">🧊 🗄 💊 🧴</div>
-</header>
-
-<nav>
-<button onclick="showMap()">Térkép</button>
-<button onclick="showShopping()">Bevásárlólista</button>
-<button onclick="logout()">Kilépés</button>
-</nav>
-
-<section id="mapView">
-
-<div class="map">
-
-<div class="place" id="fridge">
-<h3>🧊 Hűtő</h3>
-</div>
-
-<div class="place" id="freezer">
-<h3>❄️ Fagyasztó</h3>
-</div>
-
-<div class="place" id="pantry">
-<h3>🗄 Kamra</h3>
-</div>
-
-<div class="place" id="bath">
-<h3>🛁 Fürdő</h3>
-</div>
-
-<div class="place" id="meds">
-<h3>💊 Gyógyszerek</h3>
-</div>
-
-<div class="place" id="cosmetics">
-<h3>🧴 Kozmetikumok</h3>
-</div>
-
-</div>
-
-<div id="statsContainer">
-<div class="stats-card">
-<h3>Heti pazarlás</h3>
-<p><span id="weekLoss">0</span> Ft</p>
-<canvas id="weekChart"></canvas>
-</div>
-<div class="stats-card">
-<h3>Havi pazarlás</h3>
-<p><span id="monthLoss">0</span> Ft</p>
-<canvas id="monthChart"></canvas>
-</div>
-</div>
-
-</section>
-
-<section id="shoppingView" style="display:none">
-
-<h2>Bevásárlólista</h2>
-<div id="shoppingList"></div>
-
-</section>
-
-<button id="addButton" onclick="openAddModal()">+</button>
-
-</div>
-
-<div id="modal" class="modal">
-
-<div class="modalBox">
-
-<h2>Új termék / Szerkesztés</h2>
-
-<input id="itemName" placeholder="Termék neve">
-<input id="barcode" placeholder="Barcode (opcionális)">
-<input id="quantity" type="number" placeholder="Mennyiség">
-<select id="unit">
-<option>db</option>
-<option>kg</option>
-<option>l</option>
-</select>
-<input id="price" type="number" placeholder="Egységár Ft">
-<input id="expiry" type="date">
-<select id="location">
-<option value="fridge">Hűtő</option>
-<option value="freezer">Fagyasztó</option>
-<option value="pantry">Kamra</option>
-<option value="bath">Fürdő</option>
-<option value="meds">Gyógyszerek</option>
-<option value="cosmetics">Kozmetikumok</option>
-</select>
-<label>
-<input type="checkbox" id="toShopping"> Bevásárlólistára
-</label>
-
-<div class="modal-buttons">
-<button onclick="saveItem()">Mentés</button>
-<button onclick="closeModal()">Mégse</button>
-</div>
-
-</div>
-
-</div>
-
-<div id="itemModal" class="modal">
-
-<div class="modalBox" id="itemDetails"></div>
-
-</div>
-
-<script src="storage.js"></script>
-<script src="login.js"></script>
-<script src="ui.js"></script>
-<script src="app.js"></script>
-<script src="barcode.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-</body>
-</html>
+  /* ---------------------------
+     Map / Bevásárlólista
+  ---------------------------- */
+  #mapView, #shoppingView { display:none; padding:1rem; max-width:600px; margin:1rem auto; background:#fff; border-radius:15px; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+  .place { min-height:100px; margin:0.5rem 0; padding:0.5rem; border:1px dashed #ccc; border-radius:10px; background-color:#fefefe; display:flex; align-items:flex-end; justify-content:center;}
+  .place h3 { background:rgba(255,255,255,0.7); padding:0.2rem 0.5rem; border-radius:5px; }
+  .item { display:block; padding:0.3rem; margin
