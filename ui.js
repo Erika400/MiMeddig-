@@ -38,3 +38,47 @@ function refreshUI(){
     renderItems();
     renderShopping();
 }
+
+const places = document.querySelectorAll(".place");
+
+places.forEach(place=>{
+  place.addEventListener("dragover", e=>{
+    e.preventDefault();
+    place.style.background = "#fce4e4";
+  });
+
+  place.addEventListener("dragleave", e=>{
+    place.style.background = "white";
+  });
+
+  place.addEventListener("drop", e=>{
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text");
+    const items = JSON.parse(localStorage.getItem("items") || "[]");
+    const item = items.find(i=>i.id==id);
+    if(item){
+      item.place = place.id;
+      localStorage.setItem("items", JSON.stringify(items));
+      refreshUI();
+      place.style.background = "white";
+    }
+  });
+});
+
+// Drag start a termékekhez
+function makeDraggable(){
+  const itemElements = document.querySelectorAll(".item");
+  itemElements.forEach(el=>{
+    el.setAttribute("draggable","true");
+    el.addEventListener("dragstart", e=>{
+      e.dataTransfer.setData("text", el.dataset.id);
+    });
+  });
+}
+
+// Hívjuk minden UI frissítés után
+const originalRefresh = refreshUI;
+refreshUI = function(){
+  originalRefresh();
+  makeDraggable();
+}
