@@ -1,79 +1,100 @@
 <!DOCTYPE html>
 <html lang="hu">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Save It – Before You Waste It</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
-
-<!-- Chart.js a grafikonhoz -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save It – Before You Waste It</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>
-<h1>Save It</h1>
-<p>Before You Waste It</p>
-<nav>
-<button onclick="showMap()">Térkép</button>
-<button onclick="showShopping()">Bevásárlólista</button>
-<button onclick="logout()">Kilépés</button>
-</nav>
-</header>
+  <!-- BELÉPŐ / REGISZTRÁCIÓ -->
+  <section id="loginScreen" class="auth-screen">
+    <div class="auth-card">
+      <h1>Save It</h1>
+      <p class="subtitle">Before You Waste It</p>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-<input id="username" placeholder="Felhasználónév">
-<input id="password" type="password" placeholder="Jelszó">
-<button onclick="login()">Belépés</button>
-<br><br>
-<button onclick="register()">Regisztráció</button>
-</div>
+      <div class="auth-tabs">
+        <button id="loginTabBtn" class="tab-btn active" onclick="showLoginTab()">Belépés</button>
+        <button id="registerTabBtn" class="tab-btn" onclick="showRegisterTab()">Regisztráció</button>
+      </div>
 
-<!-- APP -->
-<div id="app">
+      <div id="loginTab">
+        <input id="username" placeholder="Felhasználónév">
+        <input id="password" type="password" placeholder="Jelszó">
+        <button class="primary-btn" onclick="login()">Belépés</button>
+        <p class="hint">Demo belépés: <strong>Erika</strong> / <strong>Erika</strong></p>
+      </div>
 
-<!-- MAP -->
-<div id="map">
-<div class="place" id="fridge"><h3>Hűtő</h3></div>
-<div class="place" id="freezer"><h3>Fagyasztó</h3></div>
-<div class="place" id="pantry"><h3>Kamra</h3></div>
-<div class="place" id="bath"><h3>Fürdő</h3></div>
-<div class="place" id="meds"><h3>Gyógyszerek</h3></div>
-<div class="place" id="cosmetics"><h3>Kozmetikumok</h3></div>
-</div>
+      <div id="registerTab" style="display:none;">
+        <input id="regUsername" placeholder="Felhasználónév">
+        <input id="regEmail" type="email" placeholder="Email cím">
+        <input id="regPassword" type="password" placeholder="Jelszó">
+        <button class="primary-btn" onclick="registerForm()">Regisztráció</button>
+        <p class="hint">A visszaigazoló email most teszt módban van.</p>
+      </div>
+    </div>
+  </section>
 
-<!-- Bevásárlólista -->
-<div id="shopping">
-<h2>Bevásárlólista</h2>
-<div id="shoppingList"></div>
-</div>
+  <!-- APP -->
+  <div id="app" style="display:none;">
 
-<!-- Grafikon -->
-<canvas id="wasteChart" width="400" height="200"></canvas>
+    <header class="app-header">
+      <div>
+        <h1>Save It</h1>
+        <p>Before You Waste It</p>
+      </div>
 
-</div>
+      <nav class="top-nav">
+        <button onclick="showMap()">Térkép</button>
+        <button onclick="showShopping()">Bevásárlólista</button>
+        <button onclick="showAdminPanel()">Admin</button>
+        <button onclick="logout()">Kilépés</button>
+      </nav>
+    </header>
 
-<!-- TERMÉK MODAL -->
-<div id="itemModal" class="modal">
-<div class="modalContent">
-<div id="itemInfo"></div>
-<button onclick="consumeItem()">Elfogyasztva</button>
-<button onclick="wasteItem()">Kidobva</button>
-<button onclick="addShopping()">Bevásárlólistára</button>
-<button onclick="deleteItem()">Törlés</button>
-<button onclick="closeModal()">Bezárás</button>
-</div>
-</div>
+    <main class="app-main">
+      <section id="map" class="panel">
+        <div class="place" id="fridge"><h3>Hűtő</h3></div>
+        <div class="place" id="freezer"><h3>Fagyasztó</h3></div>
+        <div class="place" id="pantry"><h3>Kamra</h3></div>
+        <div class="place" id="bath"><h3>Fürdő</h3></div>
+        <div class="place" id="meds"><h3>Gyógyszerek</h3></div>
+        <div class="place" id="cosmetics"><h3>Kozmetikumok</h3></div>
+      </section>
 
-<script src="storage.js"></script>
-<script src="login.js"></script>
-<script src="app.js"></script>
-<script src="ui.js"></script>
-<script src="barcode.js"></script>
+      <section id="shopping" class="panel" style="display:none;">
+        <h2>Bevásárlólista</h2>
+        <div id="shoppingList"></div>
+      </section>
 
+      <section id="adminPanel" class="panel" style="display:none;">
+        <h2>Regisztrált felhasználók</h2>
+        <div id="adminUsersList"></div>
+      </section>
+    </main>
+
+    <!-- termék gomb / későbbi bővítéshez -->
+    <button id="fabButton" class="fab" onclick="scanBarcode()">+</button>
+
+    <!-- TERMÉK MODAL -->
+    <div id="itemModal" class="modal">
+      <div class="modalContent">
+        <div id="itemInfo"></div>
+        <button onclick="consumeItem()">Elfogyasztva</button>
+        <button onclick="wasteItem()">Kidobva</button>
+        <button onclick="addShopping()">Bevásárlólistára</button>
+        <button onclick="deleteItem()">Törlés</button>
+        <button onclick="closeModal()">Bezárás</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="login.js"></script>
+  <script src="app.js"></script>
+  <script src="ui.js"></script>
+  <script src="barcode.js"></script>
 </body>
 </html>
