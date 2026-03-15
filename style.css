@@ -1,194 +1,154 @@
-/* Alap stílusok */
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  background: #f2f4f8;
+body{
+font-family:Arial;
+margin:0;
+background:#f2f2f2;
 }
 
-header {
-  display: none;
+/* HEADER */
+
+header{
+background:linear-gradient(135deg,#ff7b7b,#ffb86c);
+color:white;
+padding:20px;
+text-align:center;
 }
 
-.app-header {
-  text-align: center;
-  background: linear-gradient(120deg, #4f7cff, #5fd1ff);
-  color: white;
-  padding: 20px;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+header h1{
+margin:0;
+font-size:28px;
 }
 
-.app-header h1 {
-  font-size: 2rem;
-  margin: 0;
+header p{
+margin:5px 0 0 0;
+opacity:0.9;
 }
 
-.app-header p {
-  font-size: 1rem;
-  margin: 5px 0 0 0;
+/* NAV */
+
+nav{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:10px;
 }
 
-.header-icons {
-  margin-top: 10px;
-  font-size: 1.5rem;
+nav button{
+border:none;
+background:white;
+color:#444;
+padding:8px 14px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
 }
 
-/* Navigáció */
-nav {
-  display: flex;
-  justify-content: space-around;
-  background: white;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+nav button:hover{
+background:#eee;
 }
 
-nav button {
-  border: none;
-  background: #4f7cff;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 10px;
-  cursor: pointer;
+/* LOGIN */
+
+#loginScreen{
+max-width:350px;
+margin:30px auto;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
 }
 
-nav button:hover {
-  background: #3663d6;
+#loginScreen input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
 }
 
-/* Térkép és helyek */
-.map {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 15px;
+#loginScreen button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+background:#ff7b7b;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 
-.place {
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
-  min-height: 120px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+/* MAP */
+
+#map{
+padding:20px;
+max-width:600px;
+margin:auto;
 }
 
-.item {
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  display: inline-block;
-  margin: 3px;
-  cursor: pointer;
+.place{
+background:white;
+border-radius:12px;
+padding:15px;
+margin-bottom:15px;
+box-shadow:0 3px 6px rgba(0,0,0,0.1);
+min-height:80px;
 }
 
-.good { background: #b6f5b6; }
-.soon { background: #ffeaa7; }
-.expired { background: #ff7b7b; }
-
-/* Hozzáadás gomb */
-#addButton {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-  border: none;
-  background: #4f7cff;
-  color: white;
-  font-size: 30px;
-  cursor: pointer;
+.place h3{
+margin-top:0;
 }
 
-#addButton:hover {
-  background: #3663d6;
+.item{
+background:#ffe5e5;
+padding:5px 8px;
+border-radius:6px;
+margin-top:5px;
+cursor:pointer;
 }
 
-/* Modal */
-.modal {
-  position: fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  display: none;
-  background: rgba(0,0,0,0.5);
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+/* SHOPPING */
+
+#shopping{
+display:none;
+padding:20px;
+max-width:600px;
+margin:auto;
+background:white;
+border-radius:12px;
+box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-.modalBox {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 280px;
+#shopping h2{
+margin-top:0;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+/* MODAL */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.4);
+display:none;
+align-items:center;
+justify-content:center;
 }
 
-input, select {
-  width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.modalContent{
+background:white;
+padding:20px;
+border-radius:12px;
+width:300px;
 }
 
-button {
-  padding: 10px;
-  border: none;
-  background: #4f7cff;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #3663d6;
-}
-
-/* Statisztika kártyák */
-#statsContainer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 15px;
-}
-
-.stats-card {
-  display: inline-block;
-  background: white;
-  padding: 15px;
-  margin: 10px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  min-width: 140px;
-  text-align: center;
-}
-
-/* Login / Regisztráció */
-#loginScreen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-#loginScreen input {
-  margin: 5px 0;
-  padding: 10px;
-  width: 200px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-#loginScreen button {
-  margin-top: 10px;
-  width: 100px;
-  border-radius: 8px;
+.modalContent button{
+width:100%;
+margin-top:8px;
+padding:8px;
+border:none;
+border-radius:8px;
+background:#ff7b7b;
+color:white;
+cursor:pointer;
 }
