@@ -1,102 +1,257 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Save It – Before You Waste It</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/auth.css" />
-  <link rel="stylesheet" href="css/map.css" />
-  <link rel="stylesheet" href="css/modal.css" />
-  <link rel="stylesheet" href="css/stats.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Save It – Before You Waste It</title>
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/map.css">
+<link rel="stylesheet" href="css/modal.css">
+<link rel="stylesheet" href="css/stats.css">
+
 </head>
+
+
 <body>
-  <section id="authScreen" class="auth-screen">
-    <div class="auth-card">
-      <h1>Save It</h1>
-      <p class="subtitle">Before You Waste It</p>
 
-      <div class="auth-tabs">
-        <button id="loginTabBtn" class="tab-btn active" type="button" onclick="showLoginTab()">Belépés</button>
-        <button id="registerTabBtn" class="tab-btn" type="button" onclick="showRegisterTab()">Regisztráció</button>
-      </div>
+<!-- AUTH SCREEN -->
 
-      <div id="loginTab">
-        <input id="loginUsername" placeholder="Felhasználónév" />
-        <input id="loginPassword" type="password" placeholder="Jelszó" />
-        <button class="primary-btn" type="button" onclick="login()">Belépés</button>
-        <p class="hint">Demo belépés: <strong>Erika</strong> / <strong>Erika</strong></p>
-      </div>
+<section id="authScreen" class="auth-screen">
 
-      <div id="registerTab" style="display:none;">
-        <input id="registerUsername" placeholder="Felhasználónév" />
-        <input id="registerEmail" type="email" placeholder="Email cím" />
-        <input id="registerPassword" type="password" placeholder="Jelszó" />
-        <button class="primary-btn" type="button" onclick="registerUser()">Regisztráció</button>
-        <p class="hint">A visszaigazoló email jelenleg teszt módban van.</p>
-      </div>
-    </div>
-  </section>
+<div class="auth-card">
 
-  <div id="appShell" style="display:none;">
-    <header class="app-header">
-      <div>
-        <h1>Save It</h1>
-        <p>Before You Waste It</p>
-      </div>
+<h1>Save It</h1>
+<p class="subtitle">Before You Waste It</p>
 
-      <nav class="top-nav">
-        <button type="button" onclick="showView('mapView')">Térkép</button>
-        <button type="button" onclick="showView('shoppingView')">Bevásárlólista</button>
-        <button type="button" onclick="showView('statsView')">Statisztika</button>
-        <button type="button" onclick="showView('adminView')">Admin</button>
-        <button type="button" onclick="logout()">Kilépés</button>
-      </nav>
-    </header>
+<div class="auth-tabs">
 
-    <main class="app-main">
-      <section id="mapView" class="panel">
-        <div id="mapGrid">
-          <div class="place" id="fridge"><h3>Hűtő</h3><div class="place-items"></div></div>
-          <div class="place" id="freezer"><h3>Fagyasztó</h3><div class="place-items"></div></div>
-          <div class="place" id="pantry"><h3>Kamra</h3><div class="place-items"></div></div>
-          <div class="place" id="bath"><h3>Fürdő</h3><div class="place-items"></div></div>
-          <div class="place" id="meds"><h3>Gyógyszerek</h3><div class="place-items"></div></div>
-          <div class="place" id="cosmetics"><h3>Kozmetikumok</h3><div class="place-items"></div></div>
-        </div>
-      </section>
+<button id="loginTabBtn" class="tab-btn active" onclick="showLoginTab()">
+Belépés
+</button>
 
-      <section id="shoppingView" class="panel" style="display:none;">
-        <h2>Bevásárlólista</h2>
-        <div id="shoppingList"></div>
-      </section>
+<button id="registerTabBtn" class="tab-btn" onclick="showRegisterTab()">
+Regisztráció
+</button>
 
-      <section id="statsView" class="panel" style="display:none;">
-        <h2>Statisztika</h2>
-        <div class="stats-cards">
-          <div class="stats-card">
-            <h3>Heti pazarlás</h3>
-            <p><span id="weeklyWasteValue">0</span> Ft</p>
-          </div>
-          <div class="stats-card">
-            <h3>Havi pazarlás</h3>
-            <p><span id="monthlyWasteValue">0</span> Ft</p>
-          </div>
-        </div>
-        <canvas id="wasteChart" height="120"></canvas>
-      </section>
+</div>
 
-      <section id="adminView" class="panel" style="display:none;">
-        <h2>Regisztrált felhasználók</h2>
-        <div id="adminUsersList"></div>
-      </section>
-    </main>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
+<!-- LOGIN -->
+
+<div id="loginTab">
+
+<input id="loginUsername" placeholder="Felhasználónév">
+
+<input id="loginPassword" type="password" placeholder="Jelszó">
+
+<button class="primary-btn" onclick="login()">
+Belépés
+</button>
+
+<p class="hint">
+Demo belépés: <strong>Erika</strong> / <strong>Erika</strong>
+</p>
+
+</div>
+
+
+
+<!-- REGISTER -->
+
+<div id="registerTab" style="display:none">
+
+<input id="registerUsername" placeholder="Felhasználónév">
+
+<input id="registerEmail" type="email" placeholder="Email cím">
+
+<input id="registerPassword" type="password" placeholder="Jelszó">
+
+<button class="primary-btn" onclick="registerUser()">
+Regisztráció
+</button>
+
+<p class="hint">
+Visszaigazoló email jelenleg teszt módban.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- APP -->
+
+<div id="appShell" style="display:none">
+
+<header class="app-header">
+
+<div>
+
+<h1>Save It</h1>
+<p>Before You Waste It</p>
+
+</div>
+
+<nav class="top-nav">
+
+<button onclick="showView('mapView')">
+Térkép
+</button>
+
+<button onclick="showView('shoppingView')">
+Bevásárlólista
+</button>
+
+<button onclick="showView('statsView')">
+Statisztika
+</button>
+
+<button onclick="showView('adminView')">
+Admin
+</button>
+
+<button onclick="logout()">
+Kilépés
+</button>
+
+</nav>
+
+</header>
+
+
+
+<main class="app-main">
+
+
+<!-- MAP -->
+
+<section id="mapView" class="panel">
+
+<div id="mapGrid">
+
+<div class="place" id="fridge">
+
+<h3>Hűtő</h3>
+<div class="place-items"></div>
+
+</div>
+
+<div class="place" id="freezer">
+
+<h3>Fagyasztó</h3>
+<div class="place-items"></div>
+
+</div>
+
+<div class="place" id="pantry">
+
+<h3>Kamra</h3>
+<div class="place-items"></div>
+
+</div>
+
+<div class="place" id="bath">
+
+<h3>Fürdő</h3>
+<div class="place-items"></div>
+
+</div>
+
+<div class="place" id="meds">
+
+<h3>Gyógyszerek</h3>
+<div class="place-items"></div>
+
+</div>
+
+<div class="place" id="cosmetics">
+
+<h3>Kozmetikumok</h3>
+<div class="place-items"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- SHOPPING -->
+
+<section id="shoppingView" class="panel" style="display:none">
+
+<h2>Bevásárlólista</h2>
+
+<div id="shoppingList"></div>
+
+</section>
+
+
+
+<!-- STATS -->
+
+<section id="statsView" class="panel" style="display:none">
+
+<h2>Statisztika</h2>
+
+<div class="stats-cards">
+
+<div class="stats-card">
+
+<h3>Heti pazarlás</h3>
+<p><span id="weeklyWasteValue">0</span> Ft</p>
+
+</div>
+
+<div class="stats-card">
+
+<h3>Havi pazarlás</h3>
+<p><span id="monthlyWasteValue">0</span> Ft</p>
+
+</div>
+
+</div>
+
+<canvas id="wasteChart"></canvas>
+
+</section>
+
+
+
+<!-- ADMIN -->
+
+<section id="adminView" class="panel" style="display:none">
+
+<h2>Regisztrált felhasználók</h2>
+
+<div id="adminUsersList"></div>
+
+</section>
+
+
+
+</main>
+
+</div>
+
+
+
+<!-- SCRIPTS -->
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+
 </body>
+
 </html>
