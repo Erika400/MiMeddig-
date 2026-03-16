@@ -9,21 +9,83 @@ body {
   color: #1f2937;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.auth-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h1 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 14px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.demo-box {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
 .app-header {
-  padding: 24px 16px;
+  padding: 20px 16px;
   background: linear-gradient(135deg, #2f855a, #38a169);
   color: white;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .app-header h1 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-size: 28px;
 }
 
 .app-header p {
   margin: 0;
   opacity: 0.95;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-badge {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 14px;
 }
 
 .app-shell {
@@ -86,7 +148,8 @@ select {
 .secondary-btn,
 .danger-btn,
 .action-list button,
-.shopping-item button {
+.shopping-item button,
+.qty-btn {
   border: none;
   border-radius: 12px;
   padding: 12px 14px;
@@ -94,7 +157,6 @@ select {
 }
 
 .primary-btn {
-  margin-top: 14px;
   background: #2f855a;
   color: white;
 }
@@ -219,8 +281,8 @@ select {
 }
 
 .shopping-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 12px;
   align-items: center;
   padding: 10px 12px;
@@ -229,9 +291,37 @@ select {
   border: 1px solid #e5e7eb;
 }
 
-.shopping-item button {
+.shopping-main {
+  display: grid;
+  gap: 6px;
+}
+
+.shopping-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.qty-btn {
+  background: #e5e7eb;
+  min-width: 42px;
+  padding: 10px 12px;
+}
+
+.qty-value {
+  min-width: 60px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.remove-btn {
   background: #ef4444;
   color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
 }
 
 .admin-users {
@@ -255,10 +345,6 @@ select {
   border-radius: 12px;
   background: #f3f4f6;
   color: #6b7280;
-}
-
-.modal.hidden {
-  display: none;
 }
 
 .modal {
@@ -335,5 +421,9 @@ select {
 
   .modal-sheet {
     width: 100%;
+  }
+
+  .shopping-item {
+    grid-template-columns: 1fr;
   }
 }
