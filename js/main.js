@@ -129,62 +129,42 @@
     }
   }
 
-  async function hydrateFromCloud() {
-    const user = getCurrentUser();
-    if (!user) return;
+ async function hydrateFromCloud() {
+  const user = getCurrentUser();
+  if (!user) return;
 
-    try {
-      if (canUseCloudFunction("loadProductsCloud")) {
-  const cloudProducts = await window.loadProductsCloud(user.username);
-  if (Array.isArray(cloudProducts)) {
-    localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(cloudProducts));
+  try {
+    if (canUseCloudFunction("loadProductsCloud")) {
+      const cloudProducts = await window.loadProductsCloud(user.username);
+      if (Array.isArray(cloudProducts)) {
+        localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(cloudProducts));
+      }
+    }
+
+    if (canUseCloudFunction("loadShoppingListCloud")) {
+      const cloudShopping = await window.loadShoppingListCloud(user.username);
+      if (Array.isArray(cloudShopping) && cloudShopping.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.shoppingList, JSON.stringify(cloudShopping));
+      }
+    }
+
+    if (canUseCloudFunction("loadKnownProductsCloud")) {
+      const cloudKnownProducts = await window.loadKnownProductsCloud(user.username);
+      if (cloudKnownProducts && typeof cloudKnownProducts === "object") {
+        localStorage.setItem(STORAGE_KEYS.knownProducts, JSON.stringify(cloudKnownProducts));
+      }
+    }
+
+    if (canUseCloudFunction("loadWasteHistoryCloud")) {
+      const cloudWasteHistory = await window.loadWasteHistoryCloud(user.username);
+      if (Array.isArray(cloudWasteHistory)) {
+        localStorage.setItem(STORAGE_KEYS.wasteHistory, JSON.stringify(cloudWasteHistory));
+      }
+    }
+  } catch (error) {
+    console.error("Cloud betöltési hiba:", error);
   }
 }
-
-      if (canUseCloudFunction("loadShoppingListCloud")) {
-        const localShopping = getShoppingList();
-        const cloudShopping = await window.loadShoppingListCloud(user.username);
-        if (Array.isArray(cloudShopping)) {
-          const mergedShopping = mergeShoppingLists(localShopping, cloudShopping);
-          localStorage.setItem(STORAGE_KEYS.shoppingList, JSON.stringify(mergedShopping));
-          await syncShoppingToCloud(mergedShopping);
-        }
-      }
-
-      if (canUseCloudFunction("loadKnownProductsCloud")) {
-        const localKnownProducts = getKnownProducts();
-        const cloudKnownProducts = await window.loadKnownProductsCloud(user.username);
-        if (cloudKnownProducts && typeof cloudKnownProducts === "object") {
-          const mergedKnownProducts = {
-            ...cloudKnownProducts,
-            ...localKnownProducts
-          };
-          localStorage.setItem(STORAGE_KEYS.knownProducts, JSON.stringify(mergedKnownProducts));
-          await syncKnownProductsToCloud(mergedKnownProducts);
-        }
-      }
-
-      if (canUseCloudFunction("loadWasteHistoryCloud")) {
-        const localWasteHistory = getWasteHistory();
-        const cloudWasteHistory = await window.loadWasteHistoryCloud(user.username);
-        if (Array.isArray(cloudWasteHistory)) {
-          const mergedWasteHistory = [...cloudWasteHistory, ...localWasteHistory];
-          const dedupedWasteHistory = Array.from(
-            new Map(
-              mergedWasteHistory.map((entry) => [
-                JSON.stringify(entry),
-                entry
-              ])
-            ).values()
-          );
-          localStorage.setItem(STORAGE_KEYS.wasteHistory, JSON.stringify(dedupedWasteHistory));
-          await syncWasteHistoryToCloud(dedupedWasteHistory);
-        }
-      }
-    } catch (error) {
-      console.error("Cloud betöltési hiba:", error);
-    }
-  }
 
   function seedDemoData() {
     const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
