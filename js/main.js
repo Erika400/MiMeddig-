@@ -28,6 +28,167 @@
   let scannerInterval = null;
   let draggedGroupRef = null;
 
+
+  function getActiveUsername() {
+    return getCurrentUser()?.username || "guest";
+  }
+
+  function canUseCloudFunction(functionName) {
+    return typeof window[functionName] === "function";
+  }
+
+  function mergeProducts(localProducts, cloudProducts) {
+    const mergedMap = new Map();
+
+    (Array.isArray(cloudProducts) ? cloudProducts : []).forEach((product) => {
+      const normalized = normalizeProduct(product);
+      mergedMap.set(String(normalized.id), normalized);
+    });
+
+    (Array.isArray(localProducts) ? localProducts : []).forEach((product) => {
+      const normalized = normalizeProduct(product);
+      mergedMap.set(String(normalized.id), normalized);
+    });
+
+    return Array.from(mergedMap.values());
+  }
+
+  function mergeShoppingLists(localList, cloudList) {
+    const mergedMap = new Map();
+
+    (Array.isArray(cloudList) ? cloudList : []).forEach((item) => {
+      const key = shoppingKey(item);
+      mergedMap.set(key, {
+        ...item,
+        quantity: roundByUnit(item.quantity, item.unit)
+      });
+    });
+
+    (Array.isArray(localList) ? localList : []).forEach((item) => {
+      const key = shoppingKey(item);
+      const existing = mergedMap.get(key);
+
+      if (!existing) {
+        mergedMap.set(key, {
+          ...item,
+          quantity: roundByUnit(item.quantity, item.unit)
+        });
+        return;
+      }
+
+      mergedMap.set(key, {
+        ...existing,
+        ...item,
+        quantity: Math.max(
+          roundByUnit(existing.quantity, existing.unit),
+          roundByUnit(item.quantity, item.unit)
+        )
+      });
+    });
+
+    return Array.from(mergedMap.values());
+  }
+
+  async function syncProductsToCloud(products) {
+    if (!canUseCloudFunction("saveProductsCloud")) return;
+
+    try {
+      await window.saveProductsCloud(getActiveUsername(), products.map(normalizeProduct));
+    } catch (error) {
+      console.error("Cloud termékmentési hiba:", error);
+    }
+  }
+
+  async function syncShoppingToCloud(list) {
+    if (!canUseCloudFunction("saveShoppingListCloud")) return;
+
+    try {
+      await window.saveShoppingListCloud(getActiveUsername(), list);
+    } catch (error) {
+      console.error("Cloud bevásárlólista mentési hiba:", error);
+    }
+  }
+
+  async function syncKnownProductsToCloud(data) {
+    if (!canUseCloudFunction("saveKnownProductsCloud")) return;
+
+    try {
+      await window.saveKnownProductsCloud(getActiveUsername(), data);
+    } catch (error) {
+      console.error("Cloud ismert termék mentési hiba:", error);
+    }
+  }
+
+  async function syncWasteHistoryToCloud(history) {
+    if (!canUseCloudFunction("saveWasteHistoryCloud")) return;
+
+    try {
+      await window.saveWasteHistoryCloud(getActiveUsername(), history);
+    } catch (error) {
+      console.error("Cloud veszteségnapló mentési hiba:", error);
+    }
+  }
+
+  async function hydrateFromCloud() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    try {
+      if (canUseCloudFunction("loadProductsCloud")) {
+        const localProducts = getProducts();
+        const cloudProducts = await window.loadProductsCloud(user.username);
+        if (Array.isArray(cloudProducts)) {
+          const mergedProducts = mergeProducts(localProducts, cloudProducts);
+          localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(mergedProducts));
+          await syncProductsToCloud(mergedProducts);
+        }
+      }
+
+      if (canUseCloudFunction("loadShoppingListCloud")) {
+        const localShopping = getShoppingList();
+        const cloudShopping = await window.loadShoppingListCloud(user.username);
+        if (Array.isArray(cloudShopping)) {
+          const mergedShopping = mergeShoppingLists(localShopping, cloudShopping);
+          localStorage.setItem(STORAGE_KEYS.shoppingList, JSON.stringify(mergedShopping));
+          await syncShoppingToCloud(mergedShopping);
+        }
+      }
+
+      if (canUseCloudFunction("loadKnownProductsCloud")) {
+        const localKnownProducts = getKnownProducts();
+        const cloudKnownProducts = await window.loadKnownProductsCloud(user.username);
+        if (cloudKnownProducts && typeof cloudKnownProducts === "object") {
+          const mergedKnownProducts = {
+            ...cloudKnownProducts,
+            ...localKnownProducts
+          };
+          localStorage.setItem(STORAGE_KEYS.knownProducts, JSON.stringify(mergedKnownProducts));
+          await syncKnownProductsToCloud(mergedKnownProducts);
+        }
+      }
+
+      if (canUseCloudFunction("loadWasteHistoryCloud")) {
+        const localWasteHistory = getWasteHistory();
+        const cloudWasteHistory = await window.loadWasteHistoryCloud(user.username);
+        if (Array.isArray(cloudWasteHistory)) {
+          const mergedWasteHistory = [...cloudWasteHistory, ...localWasteHistory];
+          const dedupedWasteHistory = Array.from(
+            new Map(
+              mergedWasteHistory.map((entry) => [
+                JSON.stringify(entry),
+                entry
+              ])
+            ).values()
+          );
+          localStorage.setItem(STORAGE_KEYS.wasteHistory, JSON.stringify(dedupedWasteHistory));
+          await syncWasteHistoryToCloud(dedupedWasteHistory);
+        }
+      }
+    } catch (error) {
+      console.error("Cloud betöltési hiba:", error);
+    }
+  }
+
   function seedDemoData() {
     const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
     if (!users.length) {
@@ -51,7 +212,9 @@
   }
 
   function saveProducts(products) {
-    localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(products.map(normalizeProduct)));
+    const normalizedProducts = products.map(normalizeProduct);
+    localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(normalizedProducts));
+    syncProductsToCloud(normalizedProducts);
   }
 
   function getShoppingList() {
@@ -60,6 +223,7 @@
 
   function saveShoppingList(list) {
     localStorage.setItem(STORAGE_KEYS.shoppingList, JSON.stringify(list));
+    syncShoppingToCloud(list);
   }
 
   function getUsers() {
@@ -84,6 +248,7 @@
 
   function saveKnownProducts(data) {
     localStorage.setItem(STORAGE_KEYS.knownProducts, JSON.stringify(data));
+    syncKnownProductsToCloud(data);
   }
 
   function getWasteHistory() {
@@ -92,6 +257,7 @@
 
   function saveWasteHistory(history) {
     localStorage.setItem(STORAGE_KEYS.wasteHistory, JSON.stringify(history));
+    syncWasteHistoryToCloud(history);
   }
 
   function getNotifiedExpiryIds() {
@@ -377,9 +543,10 @@
     return (grouped[location] || []).find((group) => group.key === groupKey) || null;
   }
 
-  function showApp() {
+  async function showApp() {
     document.getElementById("authScreen").classList.add("hidden");
     document.getElementById("appScreen").classList.remove("hidden");
+    await hydrateFromCloud();
     renderApp();
     requestNotificationPermissionIfNeeded();
     checkExpiryNotifications();
