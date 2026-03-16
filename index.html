@@ -8,154 +8,213 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header class="app-header">
-    <h1>Save It – Before You Waste It</h1>
-    <p>Háztartási készlet és pazarlás kezelő</p>
-  </header>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <h1>Save It – Before You Waste It</h1>
+      <p class="muted">Bejelentkezés vagy regisztráció</p>
 
-  <main class="app-shell">
-    <section class="panel">
-      <h2>Új termék hozzáadása</h2>
+      <div class="auth-tabs">
+        <button id="showLoginBtn" class="primary-btn" type="button">Belépés</button>
+        <button id="showRegisterBtn" class="secondary-btn" type="button">Regisztráció</button>
+      </div>
 
-      <form id="productForm" class="product-form">
-        <div class="grid">
-          <label>
-            <span>Termék neve</span>
-            <input type="text" id="productName" required />
-          </label>
+      <form id="loginForm" class="auth-form">
+        <label>
+          <span>Felhasználónév</span>
+          <input type="text" id="loginUsername" required />
+        </label>
 
-          <label>
-            <span>Vonalkód</span>
-            <input type="text" id="productBarcode" />
-          </label>
+        <label>
+          <span>Jelszó</span>
+          <input type="password" id="loginPassword" required />
+        </label>
 
-          <label>
-            <span>Mennyiség</span>
-            <input type="number" id="productQuantity" min="0" step="0.001" required />
-          </label>
-
-          <label>
-            <span>Egység</span>
-            <select id="productUnit">
-              <option value="db">db</option>
-              <option value="kg">kg</option>
-              <option value="liter">liter</option>
-            </select>
-          </label>
-
-          <label>
-            <span>Egységár (Ft)</span>
-            <input type="number" id="productPrice" min="0" step="1" required />
-          </label>
-
-          <label>
-            <span>Lejárati idő</span>
-            <input type="date" id="productExpiry" />
-          </label>
-
-          <label>
-            <span>Hely</span>
-            <select id="productLocation">
-              <option value="Hűtő">Hűtő</option>
-              <option value="Fagyasztó">Fagyasztó</option>
-              <option value="Kamra">Kamra</option>
-              <option value="Fürdő">Fürdő</option>
-              <option value="Gyógyszerek">Gyógyszerek</option>
-              <option value="Kozmetikumok">Kozmetikumok</option>
-            </select>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="productToShopping" />
-            <span>Kerüljön bevásárlólistára is</span>
-          </label>
-        </div>
-
-        <button type="submit" class="primary-btn">Termék hozzáadása</button>
+        <button type="submit" class="primary-btn">Belépés</button>
       </form>
-    </section>
 
-    <section class="stats-row">
-      <div class="stat-card">
-        <h3>Aktív termékek</h3>
-        <div id="totalProducts" class="stat-value">0</div>
+      <form id="registerForm" class="auth-form hidden">
+        <label>
+          <span>Felhasználónév</span>
+          <input type="text" id="registerUsername" required />
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input type="email" id="registerEmail" required />
+        </label>
+
+        <label>
+          <span>Jelszó</span>
+          <input type="password" id="registerPassword" required />
+        </label>
+
+        <button type="submit" class="primary-btn">Regisztráció</button>
+      </form>
+
+      <div class="demo-box">
+        <strong>Demo belépés</strong>
+        <div>Felhasználónév: Erika</div>
+        <div>Jelszó: Erika</div>
       </div>
+    </div>
+  </div>
 
-      <div class="stat-card">
-        <h3>Hamar lejár</h3>
-        <div id="expiringSoon" class="stat-value">0</div>
+  <div id="appScreen" class="hidden">
+    <header class="app-header">
+      <div>
+        <h1>Save It – Before You Waste It</h1>
+        <p>Háztartási készlet és pazarlás kezelő</p>
       </div>
-
-      <div class="stat-card">
-        <h3>Heti pazarlás</h3>
-        <div id="weeklyWaste" class="stat-value">0 Ft</div>
+      <div class="header-actions">
+        <span id="currentUserLabel" class="user-badge"></span>
+        <button id="logoutBtn" class="secondary-btn" type="button">Kilépés</button>
       </div>
+    </header>
 
-      <div class="stat-card">
-        <h3>Havi pazarlás</h3>
-        <div id="monthlyWaste" class="stat-value">0 Ft</div>
-      </div>
-    </section>
+    <main class="app-shell">
+      <section class="panel">
+        <h2>Új termék hozzáadása</h2>
 
-    <section class="panel">
-      <h2>Pazarlás grafikon</h2>
-      <div class="chart-wrap">
-        <canvas id="wasteChart"></canvas>
-      </div>
-    </section>
+        <form id="productForm" class="product-form">
+          <div class="grid">
+            <label>
+              <span>Termék neve</span>
+              <input type="text" id="productName" required />
+            </label>
 
-    <section class="panel">
-      <h2>Háztérkép / helyek</h2>
+            <label>
+              <span>Vonalkód</span>
+              <input type="text" id="productBarcode" />
+            </label>
 
-      <div class="locations-grid">
-        <div class="location-box">
-          <h3>Hűtő</h3>
-          <div id="fridge-products" class="products-list"></div>
+            <label>
+              <span>Mennyiség</span>
+              <input type="number" id="productQuantity" min="0" step="0.001" required />
+            </label>
+
+            <label>
+              <span>Egység</span>
+              <select id="productUnit">
+                <option value="db">db</option>
+                <option value="kg">kg</option>
+                <option value="liter">liter</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Egységár (Ft)</span>
+              <input type="number" id="productPrice" min="0" step="1" required />
+            </label>
+
+            <label>
+              <span>Lejárati idő</span>
+              <input type="date" id="productExpiry" />
+            </label>
+
+            <label>
+              <span>Hely</span>
+              <select id="productLocation">
+                <option value="Hűtő">Hűtő</option>
+                <option value="Fagyasztó">Fagyasztó</option>
+                <option value="Kamra">Kamra</option>
+                <option value="Fürdő">Fürdő</option>
+                <option value="Gyógyszerek">Gyógyszerek</option>
+                <option value="Kozmetikumok">Kozmetikumok</option>
+              </select>
+            </label>
+
+            <label class="checkbox-row">
+              <input type="checkbox" id="productToShopping" />
+              <span>Kerüljön bevásárlólistára is</span>
+            </label>
+          </div>
+
+          <button type="submit" class="primary-btn">Termék hozzáadása</button>
+        </form>
+      </section>
+
+      <section class="stats-row">
+        <div class="stat-card">
+          <h3>Aktív termékek</h3>
+          <div id="totalProducts" class="stat-value">0</div>
         </div>
 
-        <div class="location-box">
-          <h3>Fagyasztó</h3>
-          <div id="freezer-products" class="products-list"></div>
+        <div class="stat-card">
+          <h3>Hamar lejár</h3>
+          <div id="expiringSoon" class="stat-value">0</div>
         </div>
 
-        <div class="location-box">
-          <h3>Kamra</h3>
-          <div id="pantry-products" class="products-list"></div>
+        <div class="stat-card">
+          <h3>Heti pazarlás</h3>
+          <div id="weeklyWaste" class="stat-value">0 Ft</div>
         </div>
 
-        <div class="location-box">
-          <h3>Fürdő</h3>
-          <div id="bathroom-products" class="products-list"></div>
+        <div class="stat-card">
+          <h3>Havi pazarlás</h3>
+          <div id="monthlyWaste" class="stat-value">0 Ft</div>
         </div>
+      </section>
 
-        <div class="location-box">
-          <h3>Gyógyszerek</h3>
-          <div id="medicines-products" class="products-list"></div>
+      <section class="panel">
+        <h2>Pazarlás grafikon</h2>
+        <div class="chart-wrap">
+          <canvas id="wasteChart"></canvas>
         </div>
+      </section>
 
-        <div class="location-box">
-          <h3>Kozmetikumok</h3>
-          <div id="cosmetics-products" class="products-list"></div>
+      <section class="panel">
+        <h2>Háztérkép / helyek</h2>
+
+        <div class="locations-grid">
+          <div class="location-box">
+            <h3>Hűtő</h3>
+            <div id="fridge-products" class="products-list"></div>
+          </div>
+
+          <div class="location-box">
+            <h3>Fagyasztó</h3>
+            <div id="freezer-products" class="products-list"></div>
+          </div>
+
+          <div class="location-box">
+            <h3>Kamra</h3>
+            <div id="pantry-products" class="products-list"></div>
+          </div>
+
+          <div class="location-box">
+            <h3>Fürdő</h3>
+            <div id="bathroom-products" class="products-list"></div>
+          </div>
+
+          <div class="location-box">
+            <h3>Gyógyszerek</h3>
+            <div id="medicines-products" class="products-list"></div>
+          </div>
+
+          <div class="location-box">
+            <h3>Kozmetikumok</h3>
+            <div id="cosmetics-products" class="products-list"></div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="panel">
-      <h2>Bevásárlólista</h2>
-      <div id="shoppingList" class="shopping-list"></div>
-    </section>
+      <section class="panel">
+        <h2>Bevásárlólista</h2>
+        <div id="shoppingList" class="shopping-list"></div>
+      </section>
 
-    <section class="panel">
-      <h2>Összes aktív termék</h2>
-      <div id="productsList" class="products-list all-products"></div>
-    </section>
+      <section class="panel">
+        <h2>Összes aktív termék</h2>
+        <div id="productsList" class="products-list all-products"></div>
+      </section>
 
-    <section class="panel" id="adminPanel">
-      <h2>Admin panel</h2>
-      <p class="muted">Csak admin felhasználónak jelenik meg.</p>
-      <div id="adminUsers" class="admin-users"></div>
-    </section>
-  </main>
+      <section class="panel" id="adminPanel">
+        <h2>Admin panel</h2>
+        <p class="muted">Csak admin felhasználónak jelenik meg.</p>
+        <div id="adminUsers" class="admin-users"></div>
+      </section>
+    </main>
+  </div>
 
   <div id="productActionModal" class="modal hidden">
     <div class="modal-backdrop" id="actionBackdrop"></div>
