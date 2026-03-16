@@ -33,7 +33,7 @@ function safeArray(v) {
 function makeId(item) {
   if (item?.id) return item.id;
   if (crypto.randomUUID) return crypto.randomUUID();
-  return "id_" + Date.now();
+  return "id_" + Date.now() + "_" + Math.random().toString(16).slice(2);
 }
 
 function cleanProduct(item, username) {
@@ -47,11 +47,26 @@ function cleanProduct(item, username) {
     quantity: Number(item?.quantity ?? 0),
     unit: item?.unit ?? "db",
     price: Number(item?.price ?? 0),
-    expiry: item?.expiry || null,
+
+    // FONTOS: a main.js expiryDate mezőt használ
+    expiry: item?.expiryDate || item?.expiry || null,
+
     location: item?.location ?? "",
     barcode: item?.barcode ?? "",
-    created_at: new Date().toISOString(),
+    created_at: item?.created_at || new Date().toISOString(),
     updated_at: new Date().toISOString()
+  };
+}
+
+function mapCloudProduct(row) {
+  return {
+    ...row,
+
+    // FONTOS: visszatöltéskor expiry -> expiryDate
+    expiryDate: row?.expiry || "",
+
+    // a main.js ezt várja
+    id: row?.id || makeId(row)
   };
 }
 
@@ -76,7 +91,7 @@ async function selectRows(table, username) {
 async function replaceRows(table, username, rows) {
   const user = getUser(username);
 
-  await fetch(
+  const delRes = await fetch(
     `${SUPABASE_URL}/rest/v1/${table}?user_id=eq.${encodeURIComponent(user)}`,
     {
       method: "DELETE",
@@ -84,22 +99,35 @@ async function replaceRows(table, username, rows) {
     }
   );
 
-  if (!rows.length) return;
+  if (!delRes.ok) {
+    console.error("DELETE hiba:", await delRes.text());
+    return false;
+  }
 
-  await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+  if (!rows.length) return true;
+
+  const insRes = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: "POST",
     headers: HEADERS,
     body: JSON.stringify(rows)
   });
+
+  if (!insRes.ok) {
+    console.error("INSERT hiba:", await insRes.text());
+    return false;
+  }
+
+  return true;
 }
 
 async function loadProductsCloud(username) {
-  return safeArray(await selectRows("items", username));
+  const rows = await selectRows("items", username);
+  return safeArray(rows).map(mapCloudProduct);
 }
 
 async function saveProductsCloud(username, products) {
   const rows = safeArray(products).map((p) => cleanProduct(p, username));
-  await replaceRows("items", username, rows);
+  return await replaceRows("items", username, rows);
 }
 
 async function loadShoppingListCloud() {
