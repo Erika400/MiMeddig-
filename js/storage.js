@@ -54,14 +54,68 @@ function getItems() {
   return readJson(STORAGE_KEYS.ITEMS, []);
 }
 
-function saveItems(items) {
+async function saveItems(items) {
   writeJson(STORAGE_KEYS.ITEMS, items);
+
+  if (typeof saveItemsCloud === "function") {
+    try {
+      await saveItemsCloud(items);
+    } catch (error) {
+      console.error("Cloud mentési hiba:", error);
+    }
+  }
 }
 
 function getShopping() {
   return readJson(STORAGE_KEYS.SHOPPING, []);
 }
 
-function saveShopping(list) {
+async function saveShopping(list) {
   writeJson(STORAGE_KEYS.SHOPPING, list);
+
+  if (typeof saveShoppingCloud === "function") {
+    try {
+      await saveShoppingCloud(list);
+    } catch (error) {
+      console.error("Cloud bevásárlólista mentési hiba:", error);
+    }
+  }
+}
+
+async function loadItemsWithCloudFallback() {
+  const localItems = getItems();
+
+  if (typeof loadItemsCloud === "function") {
+    try {
+      const cloudItems = await loadItemsCloud();
+
+      if (Array.isArray(cloudItems) && cloudItems.length > 0) {
+        writeJson(STORAGE_KEYS.ITEMS, cloudItems);
+        return cloudItems;
+      }
+    } catch (error) {
+      console.error("Cloud betöltési hiba:", error);
+    }
+  }
+
+  return localItems;
+}
+
+async function loadShoppingWithCloudFallback() {
+  const localShopping = getShopping();
+
+  if (typeof loadShoppingCloud === "function") {
+    try {
+      const cloudShopping = await loadShoppingCloud();
+
+      if (Array.isArray(cloudShopping) && cloudShopping.length > 0) {
+        writeJson(STORAGE_KEYS.SHOPPING, cloudShopping);
+        return cloudShopping;
+      }
+    } catch (error) {
+      console.error("Cloud bevásárlólista betöltési hiba:", error);
+    }
+  }
+
+  return localShopping;
 }
