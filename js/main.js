@@ -135,14 +135,11 @@
 
     try {
       if (canUseCloudFunction("loadProductsCloud")) {
-        const localProducts = getProducts();
-        const cloudProducts = await window.loadProductsCloud(user.username);
-        if (Array.isArray(cloudProducts)) {
-          const mergedProducts = mergeProducts(localProducts, cloudProducts);
-          localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(mergedProducts));
-          await syncProductsToCloud(mergedProducts);
-        }
-      }
+  const cloudProducts = await window.loadProductsCloud(user.username);
+  if (Array.isArray(cloudProducts)) {
+    localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(cloudProducts));
+  }
+}
 
       if (canUseCloudFunction("loadShoppingListCloud")) {
         const localShopping = getShoppingList();
