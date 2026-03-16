@@ -1,19 +1,19 @@
-// js/cloud.js
-
 console.log("cloud.js betöltve");
 
-async function loadProductsCloud() {
+async function loadItemsCloud() {
   return [];
 }
 
-async function saveProductCloud(product) {
+async function saveItemsCloud(items) {
+  console.log("Cloud items mentés később ide jön:", items);
   return true;
 }
 
-async function updateProductCloud(product) {
-  return true;
+async function loadShoppingCloud() {
+  return [];
 }
 
-async function deleteProductCloud(productId) {
+async function saveShoppingCloud(list) {
+  console.log("Cloud shopping mentés később ide jön:", list);
   return true;
 }
