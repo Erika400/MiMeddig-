@@ -23,30 +23,18 @@
 
   function seedDemoData() {
     const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
-
     if (!users.length) {
-      const demoUsers = [
-        {
-          username: "Erika",
-          email: "erika@demo.hu",
-          password: "Erika",
-          plan: "premiumPro",
-          admin: true
-        }
-      ];
-      localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(demoUsers));
-    }
-
-    const currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.currentUser));
-    if (!currentUser) {
       localStorage.setItem(
-        STORAGE_KEYS.currentUser,
-        JSON.stringify({
-          username: "Erika",
-          email: "erika@demo.hu",
-          plan: "premiumPro",
-          admin: true
-        })
+        STORAGE_KEYS.users,
+        JSON.stringify([
+          {
+            username: "Erika",
+            email: "erika@demo.hu",
+            password: "Erika",
+            plan: "premiumPro",
+            admin: true
+          }
+        ])
       );
     }
   }
@@ -73,6 +61,14 @@
 
   function getCurrentUser() {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.currentUser));
+  }
+
+  function setCurrentUser(user) {
+    localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify(user));
+  }
+
+  function clearCurrentUser() {
+    localStorage.removeItem(STORAGE_KEYS.currentUser);
   }
 
   function normalizeUnit(unit) {
@@ -232,7 +228,6 @@
 
     Object.entries(groups).forEach(([location, container]) => {
       if (!container) return;
-
       const filtered = products.filter((p) => p.location === location && p.quantity > 0);
       container.innerHTML = filtered.length
         ? filtered.map(renderProductCard).join("")
@@ -263,8 +258,16 @@
 
     container.innerHTML = list.map((item) => `
       <div class="shopping-item">
-        <span>${escapeHtml(item.name)} ${item.quantity ? `(${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit || "")})` : ""}</span>
-        <button type="button" onclick="removeShoppingItem('${item.id}')">Törlés</button>
+        <div class="shopping-main">
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="muted">Mennyiség külön a bevásárlólistához</div>
+        </div>
+        <div class="shopping-controls">
+          <button type="button" class="qty-btn" onclick="changeShoppingQty('${item.id}', -1)">-</button>
+          <div class="qty-value">${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit)}</div>
+          <button type="button" class="qty-btn" onclick="changeShoppingQty('${item.id}', 1)">+</button>
+          <button type="button" class="remove-btn" onclick="removeShoppingItem('${item.id}')">Törlés</button>
+        </div>
       </div>
     `).join("");
   }
@@ -355,6 +358,18 @@
     });
   }
 
+  function renderUserInfo() {
+    const currentUser = getCurrentUser();
+    const label = document.getElementById("currentUserLabel");
+    if (!label) return;
+
+    if (currentUser) {
+      label.textContent = `${currentUser.username} • ${currentUser.plan || "demo"}`;
+    } else {
+      label.textContent = "";
+    }
+  }
+
   function renderApp() {
     const products = getProducts();
     renderLocationLists(products);
@@ -362,6 +377,7 @@
     renderShoppingList();
     renderStats();
     renderAdminPanel();
+    renderUserInfo();
   }
 
   function resetProductForm() {
@@ -424,7 +440,7 @@
     upsertProduct(product);
 
     if (toShopping) {
-      addToShoppingList(product.id);
+      addToShoppingList(product.id, 1);
     }
 
     resetProductForm();
@@ -436,12 +452,9 @@
     if (!product) return;
 
     selectedProductId = productId;
-
-    const modal = document.getElementById("productActionModal");
-    const title = document.getElementById("productActionTitle");
-
-    title.textContent = `${product.name} – ${formatNumber(product.quantity, product.unit)} ${product.unit}`;
-    modal.classList.remove("hidden");
+    document.getElementById("productActionTitle").textContent =
+      `${product.name} – ${formatNumber(product.quantity, product.unit)} ${product.unit}`;
+    document.getElementById("productActionModal").classList.remove("hidden");
   }
 
   function closeProductActions() {
@@ -455,17 +468,18 @@
 
     pendingAmountAction = type;
 
-    const title = document.getElementById("amountModalTitle");
-    const info = document.getElementById("amountModalInfo");
-    const input = document.getElementById("amountInput");
-    const modal = document.getElementById("amountModal");
+    document.getElementById("amountModalTitle").textContent =
+      type === "consume" ? "Elfogyasztott mennyiség" : "Kidobott mennyiség";
 
-    title.textContent = type === "consume" ? "Elfogyasztott mennyiség" : "Kidobott mennyiség";
-    info.textContent = `Termék: ${product.name} | Elérhető: ${formatNumber(product.quantity, product.unit)} ${product.unit}`;
+    document.getElementById("amountModalInfo").textContent =
+      `Termék: ${product.name} | Elérhető: ${formatNumber(product.quantity, product.unit)} ${product.unit}`;
+
+    const input = document.getElementById("amountInput");
     input.value = product.unit === "db" ? "1" : "0.1";
     input.step = product.unit === "db" ? "1" : "0.001";
     input.min = "0";
-    modal.classList.remove("hidden");
+
+    document.getElementById("amountModal").classList.remove("hidden");
   }
 
   function closeAmountModal() {
@@ -477,8 +491,7 @@
     const product = getProductById(selectedProductId);
     if (!product || !pendingAmountAction) return;
 
-    const input = document.getElementById("amountInput");
-    const amount = toNumber(input.value, NaN);
+    const amount = toNumber(document.getElementById("amountInput").value, NaN);
 
     if (!Number.isFinite(amount) || amount <= 0) {
       alert("Érvénytelen mennyiség.");
@@ -495,12 +508,14 @@
       return;
     }
 
-    if (pendingAmountAction === "consume") {
+    const actionType = pendingAmountAction;
+
+    if (actionType === "consume") {
       product.quantity = roundByUnit(product.quantity - amount, product.unit);
       product.consumedQuantity = roundByUnit((product.consumedQuantity || 0) + amount, product.unit);
     }
 
-    if (pendingAmountAction === "waste") {
+    if (actionType === "waste") {
       product.quantity = roundByUnit(product.quantity - amount, product.unit);
       product.wastedQuantity = roundByUnit((product.wastedQuantity || 0) + amount, product.unit);
       product.wasteDate = new Date().toISOString();
@@ -510,12 +525,11 @@
 
     closeAmountModal();
     closeProductActions();
+    renderApp();
 
-    if (pendingAmountAction === "waste") {
+    if (actionType === "waste") {
       alert(`Veszteség: ${formatCurrency(amount * product.price)}`);
     }
-
-    renderApp();
   }
 
   function editProduct(productId) {
@@ -587,35 +601,32 @@
     const product = getProductById(productId);
     if (!product) return;
 
-    if (!confirm(`Biztosan törlöd ezt a terméket?\n\n${product.name}`)) {
-      return;
-    }
+    if (!confirm(`Biztosan törlöd ezt a terméket?\n\n${product.name}`)) return;
 
     removeProduct(productId);
     closeProductActions();
     renderApp();
   }
 
-  function addToShoppingList(productId) {
+  function addToShoppingList(productId, initialQuantity = 1) {
     const product = getProductById(productId);
     if (!product) return;
 
     const list = getShoppingList();
-    const exists = list.some(
-      (item) =>
-        String(item.id) === String(product.id) ||
-        String(item.name).toLowerCase() === String(product.name).toLowerCase()
-    );
+    const existing = list.find((item) => String(item.id) === String(product.id));
 
-    if (!exists) {
+    if (existing) {
+      existing.quantity = roundByUnit(existing.quantity + initialQuantity, existing.unit);
+    } else {
       list.push({
         id: product.id,
         name: product.name,
-        quantity: product.quantity,
+        quantity: roundByUnit(initialQuantity, product.unit),
         unit: product.unit
       });
-      saveShoppingList(list);
     }
+
+    saveShoppingList(list);
 
     const updated = { ...product, toShopping: true };
     upsertProduct(updated);
@@ -630,7 +641,109 @@
     renderShoppingList();
   }
 
+  function changeShoppingQty(itemId, delta) {
+    const list = getShoppingList();
+    const item = list.find((entry) => String(entry.id) === String(itemId));
+    if (!item) return;
+
+    if (item.unit === "db") {
+      item.quantity = Math.max(1, Math.round(item.quantity + delta));
+    } else {
+      item.quantity = Math.max(0.1, Math.round((item.quantity + delta) * 1000) / 1000);
+    }
+
+    saveShoppingList(list);
+    renderShoppingList();
+  }
+
+  function showApp() {
+    document.getElementById("authScreen").classList.add("hidden");
+    document.getElementById("appScreen").classList.remove("hidden");
+    renderApp();
+  }
+
+  function showAuth() {
+    document.getElementById("appScreen").classList.add("hidden");
+    document.getElementById("authScreen").classList.remove("hidden");
+  }
+
+  function showLoginForm() {
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("registerForm").classList.add("hidden");
+  }
+
+  function showRegisterForm() {
+    document.getElementById("registerForm").classList.remove("hidden");
+    document.getElementById("loginForm").classList.add("hidden");
+  }
+
+  function handleLogin(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const user = getUsers().find(
+      (entry) => entry.username === username && entry.password === password
+    );
+
+    if (!user) {
+      alert("Hibás felhasználónév vagy jelszó.");
+      return;
+    }
+
+    setCurrentUser(user);
+    showApp();
+  }
+
+  function handleRegister(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("registerUsername").value.trim();
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+
+    if (!username || !email || !password) {
+      alert("Minden mező kitöltése kötelező.");
+      return;
+    }
+
+    const users = getUsers();
+    const exists = users.some(
+      (user) => user.username === username || user.email === email
+    );
+
+    if (exists) {
+      alert("Ez a felhasználónév vagy email már létezik.");
+      return;
+    }
+
+    const newUser = {
+      username,
+      email,
+      password,
+      plan: "demo",
+      admin: false
+    };
+
+    users.push(newUser);
+    localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+    setCurrentUser(newUser);
+    showApp();
+  }
+
+  function logout() {
+    clearCurrentUser();
+    showAuth();
+  }
+
   function bindEvents() {
+    document.getElementById("showLoginBtn").addEventListener("click", showLoginForm);
+    document.getElementById("showRegisterBtn").addEventListener("click", showRegisterForm);
+    document.getElementById("loginForm").addEventListener("submit", handleLogin);
+    document.getElementById("registerForm").addEventListener("submit", handleRegister);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
     document.getElementById("productForm").addEventListener("submit", addProduct);
 
     document.getElementById("closeActionModalBtn").addEventListener("click", closeProductActions);
@@ -638,28 +751,23 @@
     document.getElementById("actionCancel").addEventListener("click", closeProductActions);
 
     document.getElementById("actionEdit").addEventListener("click", () => {
-      if (!selectedProductId) return;
-      editProduct(selectedProductId);
+      if (selectedProductId) editProduct(selectedProductId);
     });
 
     document.getElementById("actionConsume").addEventListener("click", () => {
-      if (!selectedProductId) return;
-      openAmountModal("consume");
+      if (selectedProductId) openAmountModal("consume");
     });
 
     document.getElementById("actionWaste").addEventListener("click", () => {
-      if (!selectedProductId) return;
-      openAmountModal("waste");
+      if (selectedProductId) openAmountModal("waste");
     });
 
     document.getElementById("actionShopping").addEventListener("click", () => {
-      if (!selectedProductId) return;
-      addToShoppingList(selectedProductId);
+      if (selectedProductId) addToShoppingList(selectedProductId, 1);
     });
 
     document.getElementById("actionDelete").addEventListener("click", () => {
-      if (!selectedProductId) return;
-      deleteProduct(selectedProductId);
+      if (selectedProductId) deleteProduct(selectedProductId);
     });
 
     document.getElementById("closeAmountModalBtn").addEventListener("click", closeAmountModal);
@@ -670,12 +778,18 @@
 
   window.openProductActions = openProductActions;
   window.removeShoppingItem = removeShoppingItem;
+  window.changeShoppingQty = changeShoppingQty;
 
   function init() {
     seedDemoData();
-    saveProducts(getProducts());
     bindEvents();
-    renderApp();
+
+    if (getCurrentUser()) {
+      showApp();
+    } else {
+      showAuth();
+      showLoginForm();
+    }
   }
 
   document.addEventListener("DOMContentLoaded", init);
