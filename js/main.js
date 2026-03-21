@@ -129,7 +129,7 @@
     }
   }
 
- async function hydrateFromCloud() {
+async function hydrateFromCloud() {
   const user = getCurrentUser();
   if (!user) return;
 
@@ -165,7 +165,7 @@
     console.error("Cloud betöltési hiba:", error);
   }
 }
-
+  
   function seedDemoData() {
     const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
     if (!users.length) {
