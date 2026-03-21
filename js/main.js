@@ -1634,13 +1634,13 @@ async function hydrateFromCloud() {
   window.closeScannerModal = closeScannerModal;
 
  async function init() {
-  seedDemoData();
   bindEvents();
 
   if (getCurrentUser()) {
     await hydrateFromCloud();
     showApp();
   } else {
+    seedDemoData();
     showAuth();
     showLoginForm();
   }
