@@ -1633,18 +1633,18 @@ async function hydrateFromCloud() {
   window.skipMoveExpiry = skipMoveExpiry;
   window.closeScannerModal = closeScannerModal;
 
-  function init() {
-    seedDemoData();
-    saveProducts(getProducts());
-    bindEvents();
+ async function init() {
+  seedDemoData();
+  bindEvents();
 
-    if (getCurrentUser()) {
-      showApp();
-    } else {
-      showAuth();
-      showLoginForm();
-    }
+  if (getCurrentUser()) {
+    await hydrateFromCloud();
+    showApp();
+  } else {
+    showAuth();
+    showLoginForm();
   }
+}
 
-  document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", init);
 })();
