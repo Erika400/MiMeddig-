@@ -523,7 +523,7 @@ async function hydrateFromCloud() {
   async function showApp() {
     document.getElementById("authScreen").classList.add("hidden");
     document.getElementById("appScreen").classList.remove("hidden");
-    await hydrateFromCloud();
+    
     renderApp();
     requestNotificationPermissionIfNeeded();
     checkExpiryNotifications();
