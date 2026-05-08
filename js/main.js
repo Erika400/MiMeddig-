@@ -728,46 +728,172 @@ async function hydrateFromCloud() {
   }
 
   function renderBatchCard(item) {
-    const status = getStatusFromExpiry(item.expiryDate);
-    const title = item.note ? `${item.name} – ${item.note}` : item.name;
-    const miniText = item.expiryDate ? `Lejárat: ${item.expiryDate}` : "Nincs lejárat";
+  const status = getStatusFromExpiry(item.expiryDate);
 
-    return `
-      <div class="batch-card" id="batch-${escapeHtml(item.id)}">
-        <div class="batch-summary" onclick="toggleBatchDetails('${escapeHtml(item.id)}')">
-          <div class="batch-summary-left">
-            <span class="status-dot ${statusDotClass(status)}"></span>
-            <div>
-              <div class="batch-main-title">${escapeHtml(title)}</div>
-              <div class="batch-mini">${escapeHtml(miniText)}</div>
+  const title = item.note
+    ? `${item.name} – ${item.note}`
+    : item.name;
+
+  const expiryText = item.expiryDate
+    ? item.expiryDate
+    : "Nincs lejárat";
+
+  return `
+    <div class="batch-card" id="batch-${escapeHtml(item.id)}">
+
+      <div class="batch-summary" onclick="toggleBatchDetails('${escapeHtml(item.id)}')">
+
+        <div class="batch-main">
+
+          <div class="batch-top-row">
+
+            <div class="batch-title-wrap">
+              <span class="status-dot ${statusDotClass(status)}"></span>
+
+              <div>
+                <div class="batch-main-title">
+                  ${escapeHtml(title)}
+                </div>
+
+                <div class="batch-mini">
+                  ${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit)}
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="batch-arrow">⌄</div>
-        </div>
 
-        <div class="batch-details">
-          <div class="details-grid">
-            <div><strong>Név:</strong> ${escapeHtml(item.name)}</div>
-            <div><strong>Részletezés:</strong> ${escapeHtml(item.note || "-")}</div>
-            <div><strong>Mennyiség:</strong> ${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit)}</div>
-            <div><strong>Egységár:</strong> ${escapeHtml(formatCurrency(item.price))}</div>
-            <div><strong>Lejárat:</strong> ${escapeHtml(item.expiryDate || "-")}</div>
-            <div><strong>Vonalkód:</strong> ${escapeHtml(item.barcode || "-")}</div>
-            <div><strong>Állapot:</strong> ${escapeHtml(statusLabel(status))}</div>
+            <div class="expiry-chip ${statusBadgeClass(status)}">
+              ${escapeHtml(expiryText)}
+            </div>
+
           </div>
 
-          <div class="action-row">
-            <button type="button" class="ghost-btn" onclick="editProduct('${escapeHtml(item.id)}')">Szerkesztés</button>
-            <button type="button" class="ghost-btn" onclick="startConsumeProduct('${escapeHtml(item.id)}')">Elfogyasztva</button>
-            <button type="button" class="ghost-btn" onclick="startWasteProduct('${escapeHtml(item.id)}')">Kidobva</button>
-            <button type="button" class="ghost-btn" onclick="addBatchToShopping('${escapeHtml(item.id)}')">Bevásárlólistára</button>
-            <button type="button" class="danger-btn" style="grid-column: 1 / -1;" onclick="deleteProduct('${escapeHtml(item.id)}')">Törlés</button>
-          </div>
         </div>
+
       </div>
-    `;
-  }
 
+      <div class="batch-details">
+
+        <div class="details-grid">
+          <div><strong>Egységár:</strong> ${escapeHtml(formatCurrency(item.price))}</div>
+          <div><strong>Vonalkód:</strong> ${escapeHtml(item.barcode || "-")}</div>
+          <div><strong>Állapot:</strong> ${escapeHtml(statusLabel(status))}</div>
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="ghost-btn" onclick="editProduct('${escapeHtml(item.id)}')">
+            Szerkesztés
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="startConsumeProduct('${escapeHtml(item.id)}')">
+            Elfogyasztva
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="startWasteProduct('${escapeHtml(item.id)}')">
+            Kidobva
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="addBatchToShopping('${escapeHtml(item.id)}')">
+            Bevásárlólista
+          </button>
+
+          <button
+            type="button"
+            class="danger-btn"
+            style="grid-column: 1 / -1;"
+            onclick="deleteProduct('${escapeHtml(item.id)}')"
+          >
+            Törlés
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}function renderBatchCard(item) {
+  const status = getStatusFromExpiry(item.expiryDate);
+
+  const title = item.note
+    ? `${item.name} – ${item.note}`
+    : item.name;
+
+  const expiryText = item.expiryDate
+    ? item.expiryDate
+    : "Nincs lejárat";
+
+  return `
+    <div class="batch-card" id="batch-${escapeHtml(item.id)}">
+
+      <div class="batch-summary" onclick="toggleBatchDetails('${escapeHtml(item.id)}')">
+
+        <div class="batch-main">
+
+          <div class="batch-top-row">
+
+            <div class="batch-title-wrap">
+              <span class="status-dot ${statusDotClass(status)}"></span>
+
+              <div>
+                <div class="batch-main-title">
+                  ${escapeHtml(title)}
+                </div>
+
+                <div class="batch-mini">
+                  ${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit)}
+                </div>
+              </div>
+            </div>
+
+            <div class="expiry-chip ${statusBadgeClass(status)}">
+              ${escapeHtml(expiryText)}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="batch-details">
+
+        <div class="details-grid">
+          <div><strong>Egységár:</strong> ${escapeHtml(formatCurrency(item.price))}</div>
+          <div><strong>Vonalkód:</strong> ${escapeHtml(item.barcode || "-")}</div>
+          <div><strong>Állapot:</strong> ${escapeHtml(statusLabel(status))}</div>
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="ghost-btn" onclick="editProduct('${escapeHtml(item.id)}')">
+            Szerkesztés
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="startConsumeProduct('${escapeHtml(item.id)}')">
+            Elfogyasztva
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="startWasteProduct('${escapeHtml(item.id)}')">
+            Kidobva
+          </button>
+
+          <button type="button" class="ghost-btn" onclick="addBatchToShopping('${escapeHtml(item.id)}')">
+            Bevásárlólista
+          </button>
+
+          <button
+            type="button"
+            class="danger-btn"
+            style="grid-column: 1 / -1;"
+            onclick="deleteProduct('${escapeHtml(item.id)}')"
+          >
+            Törlés
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
   function renderGroupCard(group) {
     const dragAttrs = canUseDragDrop()
       ? `draggable="true" data-group-location="${escapeHtml(group.location)}" data-group-key="${escapeHtml(group.key)}"`
