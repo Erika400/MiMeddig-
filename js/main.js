@@ -810,16 +810,7 @@ async function hydrateFromCloud() {
 
     </div>
   `;
-}function renderBatchCard(item) {
-  const status = getStatusFromExpiry(item.expiryDate);
-
-  const title = item.note
-    ? `${item.name} – ${item.note}`
-    : item.name;
-
-  const expiryText = item.expiryDate
-    ? item.expiryDate
-    : "Nincs lejárat";
+}
 
   return `
     <div class="batch-card" id="batch-${escapeHtml(item.id)}">
