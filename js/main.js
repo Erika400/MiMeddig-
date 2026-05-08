@@ -266,14 +266,40 @@ async function hydrateFromCloud() {
     return normalizeUnit(unit) === "db" ? Math.round(n) : Math.round(n * 1000) / 1000;
   }
 
-  function formatNumber(value, unit) {
-    const n = roundByUnit(value, unit);
-    return normalizeUnit(unit) === "db" ? String(Math.round(n)) : String(n);
+  function displayUnit(unit) {
+  const normalized = normalizeUnit(unit);
+
+  if (normalized === "liter") {
+    return "l";
   }
 
-  function formatCurrency(value) {
-    return `${Math.round(toNumber(value, 0))} Ft`;
+  return normalized;
+}
+
+function formatNumber(value, unit) {
+  const n = roundByUnit(value, unit);
+
+  if (normalizeUnit(unit) === "db") {
+    return new Intl.NumberFormat("hu-HU", {
+      maximumFractionDigits: 0
+    }).format(Math.round(n));
   }
+
+  return new Intl.NumberFormat("hu-HU", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 3
+  }).format(n);
+}
+
+function formatCurrency(value) {
+  return `${new Intl.NumberFormat("hu-HU", {
+    maximumFractionDigits: 0
+  }).format(Math.round(toNumber(value, 0)))} Ft`;
+}
+
+function formatUnitPrice(value, unit) {
+  return `${formatCurrency(value)}/${displayUnit(unit)}`;
+}
 
   function normalizeLocation(location) {
     return LOCATIONS.includes(location) ? location : "Kamra";
