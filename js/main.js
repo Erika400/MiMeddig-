@@ -767,7 +767,7 @@ function formatUnitPrice(value, unit) {
               <span class="status-dot ${statusDotClass(status)}"></span>
               <div>
                 <div class="batch-main-title">${escapeHtml(title)}</div>
-                <div class="batch-mini">${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(item.unit)}</div>
+                <div class="batch-mini">${escapeHtml(formatNumber(item.quantity, item.unit))} ${escapeHtml(displayUnit(item.unit))}</div>
               </div>
             </div>
 
