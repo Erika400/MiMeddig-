@@ -779,7 +779,7 @@ function formatUnitPrice(value, unit) {
 
       <div class="batch-details">
         <div class="details-grid">
-          <div><strong>Egységár:</strong> ${escapeHtml(formatCurrency(item.price))}</div>
+          <div><strong>Egységár:</strong> ${escapeHtml(formatUnitPrice(item.price, item.unit))}</div>
           <div><strong>Vonalkód:</strong> ${escapeHtml(item.barcode || "-")}</div>
           <div><strong>Állapot:</strong> ${escapeHtml(statusLabel(status))}</div>
         </div>
