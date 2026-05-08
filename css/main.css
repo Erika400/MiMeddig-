@@ -457,6 +457,14 @@ label {
   gap: 16px;
 }
 
+.batch-arrow {
+  transition: transform 0.22s ease;
+}
+
+.batch-card.open .batch-arrow {
+  transform: rotate(180deg);
+}
+
 .details-grid {
   display: grid;
   gap: 10px;
