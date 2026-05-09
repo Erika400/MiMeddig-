@@ -988,8 +988,12 @@ function formatUnitPrice(value, unit) {
     const barcode = prompt("Vonalkód:", product.barcode || "");
     if (barcode === null) return;
 
-    const quantityRaw = prompt(`Mennyiség (${product.unit}):`, String(product.quantity));
-    if (quantityRaw === null) return;
+const quantityRaw = prompt(
+  `Mennyiség (${displayUnit(product.unit)}):`,
+  String(product.quantity)
+);
+
+if (quantityRaw === null) return;
 
     const unitRaw = prompt("Egység (db / kg / liter):", product.unit);
     if (unitRaw === null) return;
