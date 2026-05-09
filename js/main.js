@@ -1445,15 +1445,31 @@ if (quantityRaw === null) return;
       return;
     }
 
-    summaryEl.innerHTML = rows.map((row) => `
-      <div class="waste-row">
-        <div>
-          <strong>${escapeHtml(row.name)}</strong><br />
-          <span class="muted">${escapeHtml(formatNumber(row.totalAmount, row.unit))} ${escapeHtml(displayUnit(row.unit))}</span>
+summaryEl.innerHTML = rows.map((row) => `
+  <div class="waste-card">
+
+    <div class="waste-card-top">
+
+      <div class="waste-main">
+        <div class="waste-title">
+          ${escapeHtml(row.name)}
         </div>
-        <div><strong>${escapeHtml(formatCurrency(row.totalLoss))}</strong></div>
+
+        <div class="waste-amount">
+          ${escapeHtml(formatNumber(row.totalAmount, row.unit))}
+          ${escapeHtml(displayUnit(row.unit))}
+          kidobva
+        </div>
       </div>
-    `).join("");
+
+      <div class="waste-loss">
+        ${escapeHtml(formatCurrency(row.totalLoss))}
+      </div>
+
+    </div>
+
+  </div>
+`).join("");
   }
 
   function renderAdminPanel() {
