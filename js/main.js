@@ -876,7 +876,7 @@ function formatUnitPrice(value, unit) {
       type === "consume" ? "Elfogyasztott mennyiség" : "Kidobott mennyiség";
 
     document.getElementById("amountModalInfo").textContent =
-      `${product.name}${product.note ? ` – ${product.note}` : ""} | Elérhető: ${formatNumber(product.quantity, product.unit)} ${product.unit}`;
+  `${product.name}${product.note ? ` – ${product.note}` : ""} | Elérhető: ${formatNumber(product.quantity, product.unit)} ${displayUnit(product.unit)}`;
 
     const input = document.getElementById("amountInput");
     input.value = product.unit === "db" ? "1" : "0.1";
