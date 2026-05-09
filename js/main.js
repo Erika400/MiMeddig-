@@ -1449,7 +1449,7 @@ if (quantityRaw === null) return;
       <div class="waste-row">
         <div>
           <strong>${escapeHtml(row.name)}</strong><br />
-          <span class="muted">${escapeHtml(formatNumber(row.totalAmount, row.unit))} ${escapeHtml(row.unit)}</span>
+          <span class="muted">${escapeHtml(formatNumber(row.totalAmount, row.unit))} ${escapeHtml(displayUnit(row.unit))}</span>
         </div>
         <div><strong>${escapeHtml(formatCurrency(row.totalLoss))}</strong></div>
       </div>
