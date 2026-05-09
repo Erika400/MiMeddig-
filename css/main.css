@@ -429,40 +429,16 @@ label {
 }
 
 .batch-details {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-
-  padding: 0 16px;
-
-  border-top: 1px solid transparent;
-
-  transition:
-    max-height 0.28s ease,
-    opacity 0.22s ease,
-    padding 0.22s ease,
-    border-color 0.22s ease;
-}
-
-.batch-card.open .batch-details {
-  max-height: 500px;
-  opacity: 1;
-
-  padding: 16px;
-
-  border-top: 1px solid #eef2ef;
-
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  padding: 16px;
+  border-top: 1px solid #eef2ef;
 }
 
 .batch-arrow {
-  transition: transform 0.22s ease;
-}
-
-.batch-card.open .batch-arrow {
-  transform: rotate(180deg);
+  display: none;
 }
 
 .details-grid {
