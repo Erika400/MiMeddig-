@@ -810,3 +810,56 @@ label {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+.waste-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid #f1e7e7;
+
+  box-shadow:
+    0 2px 6px rgba(16, 24, 40, 0.04),
+    0 10px 24px rgba(16, 24, 40, 0.05);
+}
+
+.waste-card + .waste-card {
+  margin-top: 12px;
+}
+
+.waste-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.waste-main {
+  min-width: 0;
+}
+
+.waste-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  word-break: break-word;
+}
+
+.waste-amount {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.waste-loss {
+  flex-shrink: 0;
+
+  background: #fff1f1;
+  color: #c62828;
+
+  border-radius: 999px;
+
+  padding: 10px 12px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
