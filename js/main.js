@@ -399,6 +399,7 @@ function formatUnitPrice(value, unit) {
       id: product?.id || createId(),
       name: String(product?.name || "").trim(),
       note: String(product?.note || "").trim(),
+      category: String(product?.category || "").trim(),
       barcode: String(product?.barcode || "").trim(),
       location: normalizeLocation(product?.location),
       quantity: roundByUnit(product?.quantity ?? 0, unit),
