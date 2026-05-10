@@ -520,7 +520,8 @@ function formatUnitPrice(value, unit) {
 
     Object.values(groupedByLocation).forEach((groups) => {
       groups.forEach((group) => {
-        group.items = sortProducts(group.items);        group.status = getGroupStatus(group.items);
+        group.items = sortProducts(group.items);        
+        group.status = getGroupStatus(group.items);
         group.nearestExpiry = getNearestExpiry(group.items);
         group.count = group.items.length;
       });
