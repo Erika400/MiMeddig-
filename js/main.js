@@ -520,12 +520,7 @@ function formatUnitPrice(value, unit) {
 
     Object.values(groupedByLocation).forEach((groups) => {
       groups.forEach((group) => {
-        group.items.sort((a, b) => {
-          const aExpiry = a.expiryDate ? new Date(a.expiryDate).getTime() : Number.MAX_SAFE_INTEGER;
-          const bExpiry = b.expiryDate ? new Date(b.expiryDate).getTime() : Number.MAX_SAFE_INTEGER;
-          return aExpiry - bExpiry;
-        });
-        group.status = getGroupStatus(group.items);
+        group.items = sortProducts(group.items);        group.status = getGroupStatus(group.items);
         group.nearestExpiry = getNearestExpiry(group.items);
         group.count = group.items.length;
       });
