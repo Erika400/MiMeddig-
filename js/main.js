@@ -1713,5 +1713,35 @@ summaryEl.innerHTML = rows.map((row) => `
   }
 }
 
+  function moveProduct(productId) {
+  const product = getProductById(productId);
+
+  if (!product) return;
+
+  const options = [
+    "Hűtő",
+    "Fagyasztó",
+    "Kamra",
+    "Fürdő",
+    "Gyógyszerek",
+    "Kozmetikumok"
+  ];
+
+  const location = prompt(
+    `Új hely:\n\n${options.join("\n")}`,
+    product.location || ""
+  );
+
+  if (location === null) return;
+
+  const normalizedLocation = normalizeLocation(location);
+
+  const updated = {
+    ...product,
+    location: normalizedLocation
+  };
+
+  saveEditedProduct(updated);
+}
 document.addEventListener("DOMContentLoaded", init);
 })();
