@@ -803,6 +803,7 @@ ${
           <button type="button" class="ghost-btn" onclick="startConsumeProduct('${escapeHtml(item.id)}')">Elfogyasztva</button>
           <button type="button" class="ghost-btn" onclick="startWasteProduct('${escapeHtml(item.id)}')">Kidobva</button>
           <button type="button" class="ghost-btn" onclick="addBatchToShopping('${escapeHtml(item.id)}')">Bevásárlólista</button>
+          <button type="button" class="ghost-btn" onclick="moveProduct('${escapeHtml(item.id)}')">Áthelyezés</button>
           <button type="button" class="danger-btn" style="grid-column: 1 / -1;" onclick="deleteProduct('${escapeHtml(item.id)}')">Törlés</button>
         </div>
       </div>
