@@ -1034,17 +1034,18 @@ if (quantityRaw === null) return;
       return;
     }
 
-    const updated = {
-      ...product,
-      name: name.trim(),
-      note: note.trim(),
-      barcode: barcode.trim(),
-      quantity,
-      unit,
-      price,
-      expiryDate: expiryDate.trim(),
-      location: normalizeLocation(location)
-    };
+const updated = {
+  ...product,
+  name: name.trim(),
+  note: note.trim(),
+  category: category.trim(),
+  barcode: barcode.trim(),
+  quantity,
+  unit,
+  price,
+  expiryDate: expiryDate.trim(),
+  location: normalizeLocation(location)
+};
 
     upsertProduct(recalcStatus(updated));
     rememberKnownProduct(updated);
