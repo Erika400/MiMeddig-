@@ -986,6 +986,9 @@ function formatUnitPrice(value, unit) {
     const note = prompt("Részletezés / márka / kiszerelés:", product.note || "");
     if (note === null) return;
 
+    const category = prompt("Kategória / csoport:", product.category || "");
+if (category === null) return;
+    
     const barcode = prompt("Vonalkód:", product.barcode || "");
     if (barcode === null) return;
 
