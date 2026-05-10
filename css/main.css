@@ -856,3 +856,21 @@ label {
   font-size: 12px;
   font-weight: 600;
 }
+
+.inventory-toolbar {
+  margin-bottom: 16px;
+}
+
+.inventory-toolbar select {
+  width: 100%;
+  min-height: 48px;
+
+  border-radius: 14px;
+  border: 1px solid #d8e2dc;
+
+  padding: 12px;
+
+  background: #fff;
+
+  font-size: 14px;
+}
